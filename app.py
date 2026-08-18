@@ -154,8 +154,8 @@ def load_and_evaluate_model(data_split):
 # Mengubah spasi menjadi underscore khusus untuk mencari nama file
         nama_kab_file = nama_kab.replace(" ", "_")
         
-        path_rf  = f"model_final/RF_{nama_kab_file}.pkl"
-        path_xgb = f"model_final/XGB_{nama_kab_file}.pkl"
+        path_rf  = f"model_final/RF_Tahap3_{nama_kab_file}.pkl"
+        path_xgb = f"model_final/XGB_Tahap3_{nama_kab_file}.pkl"
 
         try:
             # 1. LOAD MODEL
