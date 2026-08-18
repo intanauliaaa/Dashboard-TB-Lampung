@@ -203,7 +203,7 @@ def load_and_evaluate_model(data_split):
                     })
                     
         except FileNotFoundError:
-            st.error(f"❌ File tidak ditemukan: {path_rf} atau {path_xgb}. Cek nama file di GitHub!")
+            st.error(f"File tidak ditemukan: {path_rf} atau {path_xgb}. Cek nama file di GitHub!")
             st.stop()
 
     return hasil_model, pd.DataFrame(hasil_eval), fitur_terpilih, importance_all
