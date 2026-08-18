@@ -152,8 +152,8 @@ def load_and_evaluate_model(data_split):
         kt  = split['kolom_tar']
 
         # ⚠️ SESUAIKAN FORMAT STRING INI DENGAN NAMA FILE .PKL DI GITHUB-MU
-        path_rf  = f"model_final/RF_tahap3_{nama_kab}.pkl"
-        path_xgb = f"model_final/XGB_tahap3_{nama_kab}.pkl"
+        path_rf  = f"model_final/RF_Tahap3_{nama_kab}.pkl"
+        path_xgb = f"model_final/XGB_Tahap3_{nama_kab}.pkl"
 
         try:
             # 1. LOAD MODEL
