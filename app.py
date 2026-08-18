@@ -176,14 +176,14 @@ def buat_lag(data_kabupaten):
         data_kabupaten[nama_kab] = df
     return data_kabupaten
 
-def split_data(data_kabupaten, dengan_lag=True):
+def split_data(data_kabupaten):
     nama_ref  = list(data_kabupaten.keys())[0]
     df_ref    = data_kabupaten[nama_ref]
     kolom_num = df_ref.select_dtypes(include=[np.number]).columns.tolist()
-    if dengan_lag:
-        kolom_pred_awal = [c for c in kolom_num if c not in KOLOM_TARGET]
-    else:
-        kolom_pred_awal = [c for c in kolom_num if c not in KOLOM_TARGET and 'lag' not in c.lower()]
+    
+    # Fitur lag diaktifkan secara permanen
+    kolom_pred_awal = [c for c in kolom_num if c not in KOLOM_TARGET]
+    
     data_split = {}
     for nama_kab, df in data_kabupaten.items():
         df    = df.sort_values(KOLOM_TANGGAL).reset_index(drop=True)
@@ -216,7 +216,7 @@ def adj_r2(r2, n, k):
         return np.nan
     return 1 - (1 - r2) * (n - 1) / (n - k - 1)
 
-def latih_model(data_split, fitur_terpilih, gunakan_grid=True):
+def latih_model(data_split, fitur_terpilih):
     tscv        = TimeSeriesSplit(n_splits=5)
     hasil_model = {}
     hasil_eval  = []
@@ -230,35 +230,25 @@ def latih_model(data_split, fitur_terpilih, gunakan_grid=True):
         n, k    = len(yte), len(fitur)
         hasil_model[nama_kab] = {}
 
-        # RF
+        # Murni menggunakan GridSearch untuk Random Forest
         t0 = time.time()
-        if gunakan_grid:
-            gs = GridSearchCV(RandomForestRegressor(random_state=RANDOM_STATE),
-                              RF_PARAM_GRID, cv=tscv,
-                              scoring='neg_root_mean_squared_error', n_jobs=-1)
-            gs.fit(Xtr, ytr)
-            rf_m = gs.best_estimator_
-        else:
-            rf_m = RandomForestRegressor(n_estimators=20, max_depth=3,
-                                         min_samples_split=4, min_samples_leaf=1,
-                                         random_state=RANDOM_STATE)
-            rf_m.fit(Xtr, ytr)
+        gs = GridSearchCV(RandomForestRegressor(random_state=RANDOM_STATE),
+                          RF_PARAM_GRID, cv=tscv,
+                          scoring='neg_root_mean_squared_error', n_jobs=-1)
+        gs.fit(Xtr, ytr)
+        rf_m = gs.best_estimator_
         yp_rf  = rf_m.predict(Xte)
         rt_rf  = (time.time() - t0) * 1000
 
-        # XGB
+        # Murni menggunakan GridSearch untuk XGBoost
         t0 = time.time()
         xgb_base = MultiOutputRegressor(XGBRegressor(
             objective='reg:squarederror', booster='gbtree',
             random_state=RANDOM_STATE, verbosity=0))
-        if gunakan_grid:
-            gs2 = GridSearchCV(xgb_base, XGB_PARAM_GRID, cv=tscv,
-                               scoring='neg_root_mean_squared_error', n_jobs=-1)
-            gs2.fit(Xtr, ytr)
-            xgb_m = gs2.best_estimator_
-        else:
-            xgb_base.fit(Xtr, ytr)
-            xgb_m = xgb_base
+        gs2 = GridSearchCV(xgb_base, XGB_PARAM_GRID, cv=tscv,
+                           scoring='neg_root_mean_squared_error', n_jobs=-1)
+        gs2.fit(Xtr, ytr)
+        xgb_m = gs2.best_estimator_
         yp_xgb = xgb_m.predict(Xte)
         rt_xgb = (time.time() - t0) * 1000
 
@@ -302,10 +292,6 @@ with st.sidebar:
     )
     if uploaded_files:
         st.success(f"{len(uploaded_files)} file terupload")
-    st.divider()
-    st.markdown("### Pengaturan Model")
-    gunakan_grid = st.toggle("Gunakan GridSearch", value=True)
-    dengan_lag   = st.toggle("Gunakan Lag Features", value=True)
     st.divider()
     st.caption("© 2025 · Dashboard TB Lampung")
 
@@ -438,12 +424,12 @@ with tab3:
     st.markdown('<div class="info-box">Klik tombol di bawah untuk melatih model. Proses membutuhkan beberapa menit.</div>', unsafe_allow_html=True)
 
     if st.button("Latih Model Sekarang", type="primary"):
-        with st.spinner("Mempersiapkan data..."):
-            data_split = split_data(data_kabupaten, dengan_lag=dengan_lag)
+        with st.spinner("Mempersiapkan data (dengan Lag Features)..."):
+            data_split = split_data(data_kabupaten)
         with st.spinner("Seleksi fitur..."):
             fitur_terpilih, importance_all = seleksi_fitur(data_split)
-        with st.spinner(f"Melatih RF & XGBoost {'dengan GridSearch' if gunakan_grid else 'manual'}..."):
-            hasil_model, df_eval = latih_model(data_split, fitur_terpilih, gunakan_grid)
+        with st.spinner("Melatih RF & XGBoost menggunakan GridSearch (Mohon tunggu)..."):
+            hasil_model, df_eval = latih_model(data_split, fitur_terpilih)
         st.session_state.update({
             'hasil_model': hasil_model, 'df_eval': df_eval,
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
