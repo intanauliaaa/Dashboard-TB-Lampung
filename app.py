@@ -27,11 +27,6 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-/* Mengunci warna background utama agar tetap bersih */
-.stApp {
-    background-color: #F8FAFC;
-}
-
 /* Header Utama - Gradient Teal ke Navy */
 .main-header {
     background: linear-gradient(135deg, #1E3A5F 0%, #0D9488 100%);
@@ -79,31 +74,10 @@ st.markdown("""
     margin: 2rem 0 1.5rem 0;
 }
 
-/* KOTAK INFORMASI - MENGUNCI WARNA TEKS AGAR AMAN DARI DARK MODE */
-.info-box { 
-    background-color: #EFF6FF; 
-    border: 1px solid #BFDBFE; 
-    border-radius: 8px; 
-    padding: 1.2rem; 
-    color: #1E3A5F !important; /* Warna teks dipaksa Navy */
-    margin: 1rem 0; 
-}
-.warning-box { 
-    background-color: #FEF3C7; 
-    border: 1px solid #FDE68A; 
-    border-radius: 8px; 
-    padding: 1.2rem; 
-    color: #92400E !important; /* Warna teks dipaksa Cokelat Gelap */
-    margin: 1rem 0; 
-}
-.success-box { 
-    background-color: #F0FDF4; 
-    border: 1px solid #86EFAC; 
-    border-radius: 8px; 
-    padding: 1.2rem; 
-    color: #166534 !important; /* Warna teks dipaksa Hijau Gelap */
-    margin: 1rem 0; 
-}
+/* Kotak Informasi */
+.info-box { background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 1.2rem; margin: 1rem 0; }
+.warning-box { background-color: #FEF3C7; border: 1px solid #FDE68A; border-radius: 8px; padding: 1.2rem; margin: 1rem 0; }
+.success-box { background-color: #F0FDF4; border: 1px solid #86EFAC; border-radius: 8px; padding: 1.2rem; margin: 1rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
