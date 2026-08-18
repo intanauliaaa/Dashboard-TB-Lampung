@@ -338,7 +338,6 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
-        st.success("Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
 
     if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
