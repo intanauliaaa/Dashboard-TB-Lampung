@@ -339,13 +339,31 @@ with tab3:
             'data_split': data_split,
         })
 
-    if 'hasil_model' in st.session_state:
+if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
         df_eval        = st.session_state['df_eval']
         fitur_terpilih = st.session_state['fitur_terpilih']
         data_split     = st.session_state['data_split']
 
-        # Tabel per kabupaten (Dipindah ke atas agar langsung terlihat)
+        # 1. KEMBALINYA RINGKASAN GLOBAL
+        st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
+        gc = df_eval.groupby('Model')[['MAE','RMSE','R²','Adj R²']].mean().round(3)
+        rt = df_eval.groupby('Model')['Running Time (ms)'].sum().round(0)
+        c1, c2 = st.columns(2)
+        for i, (mn, row) in enumerate(gc.iterrows()):
+            warna = "#1D6FA4" if "Forest" in mn else "#EA580C"
+            col   = c1 if i == 0 else c2
+            with col:
+                st.markdown(f"""<div class="metric-card">
+                <div style="color:{warna};font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;">{mn}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                    <div><div class="metric-value" style="font-size:1.3rem;">{row['MAE']}</div><div class="metric-label">Rata-rata MAE</div></div>
+                    <div><div class="metric-value" style="font-size:1.3rem;">{row['RMSE']}</div><div class="metric-label">Rata-rata RMSE</div></div>
+                    <div><div class="metric-value" style="font-size:1.3rem;">{row['R²']}</div><div class="metric-label">Rata-rata R²</div></div>
+                    <div><div class="metric-value" style="font-size:1.3rem;">{rt[mn]:.0f}</div><div class="metric-label">Total RT (ms)</div></div>
+                </div></div>""", unsafe_allow_html=True)
+
+        # 2. TABEL EVALUASI
         st.markdown('<div class="section-title">Evaluasi Per Kabupaten/Kota</div>', unsafe_allow_html=True)
         t_filter = st.selectbox("Filter Target", ['Semua'] + list(TARGET_LABELS.values()), key='ef')
         df_show  = df_eval.copy()
@@ -355,7 +373,19 @@ with tab3:
         df_pkab = df_show.groupby(['Kabupaten/Kota','Model'])[['MAE','RMSE','R²','Adj R²']].mean().round(3).reset_index()
         st.dataframe(df_pkab, use_container_width=True, height=380)
 
-        # Aktual vs Prediksi
+        # 3. KEMBALINYA GRAFIK MAE & RMSE
+        st.markdown('<div class="section-title">Perbandingan MAE & RMSE</div>', unsafe_allow_html=True)
+        fig_cmp = make_subplots(rows=1, cols=2, subplot_titles=['MAE', 'RMSE'])
+        for mn, color in [('Random Forest','#1D6FA4'),('XGBoost','#EA580C')]:
+            dm = df_pkab[df_pkab['Model']==mn].sort_values('MAE')
+            fig_cmp.add_trace(go.Bar(name=mn, x=dm['MAE'], y=dm['Kabupaten/Kota'],
+                orientation='h', marker_color=color, legendgroup=mn), row=1, col=1)
+            fig_cmp.add_trace(go.Bar(name=mn, x=dm['RMSE'], y=dm['Kabupaten/Kota'],
+                orientation='h', marker_color=color, legendgroup=mn, showlegend=False), row=1, col=2)
+        fig_cmp.update_layout(height=480, barmode='group', legend=dict(orientation='h',y=-0.15))
+        st.plotly_chart(fig_cmp, use_container_width=True)
+
+        # 4. GRAFIK AKTUAL VS PREDIKSI
         st.markdown('<div class="section-title">Grafik Aktual vs Prediksi</div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
         with c1:
@@ -379,6 +409,24 @@ with tab3:
             fig_ap.update_layout(title=f'Aktual vs Prediksi — {kab_ap} — {tgt_ap}',
                 xaxis_title='Periode (bulan)', yaxis_title='Jumlah Kasus', height=400, hovermode='x unified')
             st.plotly_chart(fig_ap, use_container_width=True)
+            
+        # 5. KEMBALINYA GRAFIK WAKTU KOMPUTASI
+        st.markdown('<div class="section-title">Waktu Komputasi (Running Time)</div>', unsafe_allow_html=True)
+        rt_rows = [{'Kabupaten/Kota': k,
+                    'Random Forest': round(v['rf']['rt'], 2),
+                    'XGBoost': round(v['xgb']['rt'], 2)}
+                   for k, v in hasil_model.items()]
+        df_rt  = pd.DataFrame(rt_rows).sort_values('Random Forest', ascending=True)
+        fig_rt = go.Figure()
+        fig_rt.add_trace(go.Bar(name='Random Forest', x=df_rt['Random Forest'],
+            y=df_rt['Kabupaten/Kota'], orientation='h', marker_color='#1D6FA4',
+            text=df_rt['Random Forest'], textposition='outside'))
+        fig_rt.add_trace(go.Bar(name='XGBoost', x=df_rt['XGBoost'],
+            y=df_rt['Kabupaten/Kota'], orientation='h', marker_color='#EA580C',
+            text=df_rt['XGBoost'], textposition='outside'))
+        fig_rt.update_layout(title='Running Time per Kabupaten (ms)', barmode='group',
+            height=480, xaxis_title='ms', legend=dict(orientation='h',y=-0.15))
+        st.plotly_chart(fig_rt, use_container_width=True)
 
 # ---- TAB 4: REKOMENDASI ----
 with tab4:
