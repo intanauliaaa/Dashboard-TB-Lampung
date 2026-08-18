@@ -20,7 +20,6 @@ warnings.filterwarnings('ignore')
 # ============================================================
 st.set_page_config(
     page_title="TB Lampung — Dashboard Prediksi",
-    page_icon="🫁",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -133,16 +132,16 @@ XGB_PARAM_GRID = {
 }
 
 REKOMENDASI = {
-    'JML_SPS'    : "📋 Tingkatkan kapasitas skrining TB — jumlah suspek tinggi mengindikasikan perlunya penambahan tenaga kesehatan dan alat diagnostik.",
-    'JML_SPL'    : "🏥 Perkuat layanan TB di faskes tingkat lanjut — kasus pasien lanjutan perlu pemantauan lebih intensif.",
-    'JML_FASKES' : "🏗️ Tambah fasilitas kesehatan di wilayah dengan akses terbatas untuk meningkatkan cakupan deteksi TB.",
-    'JML_PENDUDUK': "👥 Fokuskan program TB pada wilayah padat penduduk — tingkatkan sosialisasi dan deteksi aktif di komunitas.",
-    'PRS_LLis'   : "💡 Perbaiki kondisi sosiodemografi — wilayah dengan akses listrik rendah cenderung memiliki faktor risiko TB lebih tinggi.",
-    'PRS_JAMBAN' : "🚿 Tingkatkan sanitasi dasar — persentase rumah dengan jamban layak berpengaruh terhadap penularan TB.",
-    'JML_KSO_lag1': "📅 Pantau tren kasus bulan sebelumnya — lonjakan TB-SO perlu respons cepat dalam 1 bulan ke depan.",
-    'JML_KSO_lag2': "📅 Evaluasi program 2 bulan terakhir — pola kasus historis mengindikasikan perlunya penyesuaian intervensi.",
-    'JML_KSO_lag3': "📅 Tinjau program TB kuartalan — tren 3 bulan menjadi acuan perencanaan anggaran dan sumber daya.",
-    'DEFAULT'    : "📊 Lakukan evaluasi menyeluruh program TB di wilayah ini berdasarkan data terkini dari Dinas Kesehatan.",
+    'JML_SPS'    : "Tingkatkan kapasitas skrining TB — jumlah suspek tinggi mengindikasikan perlunya penambahan tenaga kesehatan dan alat diagnostik.",
+    'JML_SPL'    : "Perkuat layanan TB di faskes tingkat lanjut — kasus pasien lanjutan perlu pemantauan lebih intensif.",
+    'JML_FASKES' : "Tambah fasilitas kesehatan di wilayah dengan akses terbatas untuk meningkatkan cakupan deteksi TB.",
+    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk — tingkatkan sosialisasi dan deteksi aktif di komunitas.",
+    'PRS_LLis'   : "Perbaiki kondisi sosiodemografi — wilayah dengan akses listrik rendah cenderung memiliki faktor risiko TB lebih tinggi.",
+    'PRS_JAMBAN' : "Tingkatkan sanitasi dasar — persentase rumah dengan jamban layak berpengaruh terhadap penularan TB.",
+    'JML_KSO_lag1': "Pantau tren kasus bulan sebelumnya — lonjakan TB-SO perlu respons cepat dalam 1 bulan ke depan.",
+    'JML_KSO_lag2': "Evaluasi program 2 bulan terakhir — pola kasus historis mengindikasikan perlunya penyesuaian intervensi.",
+    'JML_KSO_lag3': "Tinjau program TB kuartalan — tren 3 bulan menjadi acuan perencanaan anggaran dan sumber daya.",
+    'DEFAULT'    : "Lakukan evaluasi menyeluruh program TB di wilayah ini berdasarkan data terkini dari Dinas Kesehatan.",
 }
 
 # ============================================================
@@ -293,18 +292,18 @@ def get_rek(fitur):
 # SIDEBAR
 # ============================================================
 with st.sidebar:
-    st.markdown("## 🫁 TB Lampung")
+    st.markdown("## TB Lampung")
     st.markdown("**Dashboard Prediksi & Analisis**")
     st.divider()
-    st.markdown("### 📂 Upload Data")
+    st.markdown("### Upload Data")
     uploaded_files = st.file_uploader(
         "Upload CSV per kabupaten/kota (15 file)",
         type=['csv'], accept_multiple_files=True,
     )
     if uploaded_files:
-        st.success(f"✅ {len(uploaded_files)} file terupload")
+        st.success(f"{len(uploaded_files)} file terupload")
     st.divider()
-    st.markdown("### ⚙️ Pengaturan Model")
+    st.markdown("### Pengaturan Model")
     gunakan_grid = st.toggle("Gunakan GridSearch", value=True)
     dengan_lag   = st.toggle("Gunakan Lag Features", value=True)
     st.divider()
@@ -315,14 +314,14 @@ with st.sidebar:
 # ============================================================
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin:0;font-size:1.8rem;">🫁 Dashboard Prediksi Tuberkulosis</h1>
+    <h1 style="margin:0;font-size:1.8rem;">Dashboard Prediksi Tuberkulosis</h1>
     <p style="margin:0.5rem 0 0 0;opacity:0.85;">Provinsi Lampung · Random Forest & XGBoost · 2021–2025</p>
 </div>
 """, unsafe_allow_html=True)
 
 if not uploaded_files:
     st.markdown("""<div class="info-box">
-    <h3>👈 Mulai dengan Upload Data</h3>
+    <h3>Mulai dengan Upload Data</h3>
     <p>Upload 15 file CSV kabupaten/kota di sidebar kiri.</p>
     <p><strong>Format nama file:</strong> <code>Data Used - Nama_Kabupaten.csv</code></p>
     </div>""", unsafe_allow_html=True)
@@ -345,7 +344,7 @@ df_all = pd.concat([df.assign(**{'Kabupaten/Kota': k}) for k, df in data_kabupat
 # ============================================================
 # TABS
 # ============================================================
-tab1, tab2, tab3, tab4 = st.tabs(["🗺️ Sebaran Kasus", "📊 Data & Tren", "🤖 Prediksi & Evaluasi", "💡 Rekomendasi"])
+tab1, tab2, tab3, tab4 = st.tabs(["Sebaran Kasus", "Data & Tren", "Prediksi & Evaluasi", "Rekomendasi"])
 
 # ---- TAB 1: SEBARAN ----
 with tab1:
@@ -387,7 +386,7 @@ with tab1:
 # ---- TAB 2: DATA & TREN ----
 with tab2:
     st.markdown('<div class="section-title">Data Kasus TB & Tren</div>', unsafe_allow_html=True)
-    s1, s2 = st.tabs(["📈 Tren Waktu", "🔥 Heatmap & Statistik"])
+    s1, s2 = st.tabs(["Tren Waktu", "Heatmap & Statistik"])
 
     with s1:
         c1, c2 = st.columns(2)
@@ -436,9 +435,9 @@ with tab2:
 # ---- TAB 3: PREDIKSI & EVALUASI ----
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-box">ℹ️ Klik tombol di bawah untuk melatih model. Proses membutuhkan beberapa menit.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-box">Klik tombol di bawah untuk melatih model. Proses membutuhkan beberapa menit.</div>', unsafe_allow_html=True)
 
-    if st.button("🚀 Latih Model Sekarang", type="primary"):
+    if st.button("Latih Model Sekarang", type="primary"):
         with st.spinner("Mempersiapkan data..."):
             data_split = split_data(data_kabupaten, dengan_lag=dengan_lag)
         with st.spinner("Seleksi fitur..."):
@@ -450,7 +449,7 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
-        st.success("✅ Model berhasil dilatih!")
+        st.success("Model berhasil dilatih!")
 
     if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
@@ -465,11 +464,10 @@ with tab3:
         c1, c2 = st.columns(2)
         for i, (mn, row) in enumerate(gc.iterrows()):
             warna = "#1D6FA4" if "Forest" in mn else "#EA580C"
-            ikon  = "🌳" if "Forest" in mn else "⚡"
             col   = c1 if i == 0 else c2
             with col:
                 st.markdown(f"""<div class="metric-card">
-                <div style="color:{warna};font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;">{ikon} {mn}</div>
+                <div style="color:{warna};font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;">{mn}</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
                     <div><div class="metric-value" style="font-size:1.3rem;">{row['MAE']}</div><div class="metric-label">MAE</div></div>
                     <div><div class="metric-value" style="font-size:1.3rem;">{row['RMSE']}</div><div class="metric-label">RMSE</div></div>
@@ -548,7 +546,7 @@ with tab4:
     st.markdown('<div class="section-title">Rekomendasi Tindakan Berdasarkan Feature Importance</div>', unsafe_allow_html=True)
 
     if 'fitur_terpilih' not in st.session_state:
-        st.markdown('<div class="warning-box">⚠️ Latih model terlebih dahulu di tab <strong>Prediksi & Evaluasi</strong>.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="warning-box">Latih model terlebih dahulu di tab <strong>Prediksi & Evaluasi</strong>.</div>', unsafe_allow_html=True)
     else:
         fitur_terpilih  = st.session_state['fitur_terpilih']
         importance_all  = st.session_state['importance_all']
@@ -560,7 +558,7 @@ with tab4:
         if kab_rek:
             c1, c2 = st.columns(2)
             with c1:
-                st.markdown("#### 🌳 Feature Importance — Random Forest")
+                st.markdown("#### Feature Importance — Random Forest")
                 imp    = importance_all[kab_rek]
                 thr    = imp.mean()
                 top10  = imp.head(10)
@@ -575,7 +573,7 @@ with tab4:
                 st.plotly_chart(fig_rf, use_container_width=True)
 
             with c2:
-                st.markdown("#### ⚡ Feature Importance — XGBoost")
+                st.markdown("#### Feature Importance — XGBoost")
                 if kab_rek in hasil_model:
                     xgb_m = hasil_model[kab_rek]['xgb']['model']
                     fitur = fitur_terpilih[kab_rek]
@@ -593,7 +591,7 @@ with tab4:
 
             # Rekomendasi
             st.markdown("---")
-            st.markdown("#### 💡 Rekomendasi Tindakan")
+            st.markdown("#### Rekomendasi Tindakan")
             fitur_list  = fitur_terpilih[kab_rek]
             fitur_utama = fitur_list[0] if fitur_list else 'DEFAULT'
             rek         = get_rek(fitur_utama)
@@ -609,7 +607,7 @@ with tab4:
 
             st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list)}</div>', unsafe_allow_html=True)
 
-            with st.expander("📋 Lihat Rekomendasi Semua Kabupaten/Kota"):
+            with st.expander("Lihat Rekomendasi Semua Kabupaten/Kota"):
                 for nama, ft in fitur_terpilih.items():
                     fd = ft[0] if ft else 'DEFAULT'
                     st.markdown(f"**{nama}** — Faktor dominan: `{fd}`")
