@@ -166,10 +166,15 @@ def load_and_evaluate_model(data_split):
             fitur = list(rf_m.feature_names_in_)
             fitur_terpilih[nama_kab] = fitur
             
-            # Siapkan X_test sesuai fitur yang diminta model
-            Xte  = split['df_test_full'][fitur].fillna(0)
+            # PERTAHANAN 1: Cek apakah ada data setelah tanggal split (2025-01-01)
+            if split['df_test_full'].empty:
+                st.error(f"❌ Data uji untuk {nama_kab} kosong! Pastikan CSV-mu memiliki data melewati tanggal batas {TANGGAL_SPLIT}.")
+                st.stop()
+            
+            # PERTAHANAN 2: Paksa semua data menjadi angka murni (buang teks nyasar)
+            Xte  = split['df_test_full'][fitur].apply(pd.to_numeric, errors='coerce').fillna(0)
             n, k = len(yte), len(fitur)
-
+            
             # 3. PREDIKSI KILAT
             t0 = time.time()
             yp_rf  = rf_m.predict(Xte)
@@ -322,7 +327,7 @@ with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
     st.markdown('<div class="info-box">Klik tombol di bawah untuk mengeksekusi prediksi dari model Colab.</div>', unsafe_allow_html=True)
 
-    if st.button("🚀 Jalankan Evaluasi Model", type="primary"):
+    if st.button("Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
             data_split = split_data_test_only(data_kabupaten)
         with st.spinner("Memuat model (.pkl) dan menghitung evaluasi..."):
@@ -333,7 +338,7 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
-        st.success("✅ Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
+        st.success("Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
 
     if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
