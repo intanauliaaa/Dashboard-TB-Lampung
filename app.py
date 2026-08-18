@@ -307,7 +307,7 @@ with st.sidebar:
     gunakan_grid = st.toggle("Gunakan GridSearch", value=True)
     dengan_lag   = st.toggle("Gunakan Lag Features", value=True)
     st.divider()
-    st.caption("© 2025 · Penelitian Skripsi · TB Lampung")
+    st.caption("© 2025 · Dashboard TB Lampung")
 
 # ============================================================
 # HEADER
@@ -615,4 +615,4 @@ with tab4:
                     st.divider()
 
 st.markdown("---")
-st.caption("© 2025 · Dashboard TB Lampung · Random Forest & XGBoost · Penelitian Skripsi")
+st.caption("© 2025 · Dashboard TB Lampung · Random Forest & XGBoost")
