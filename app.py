@@ -27,27 +27,83 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+/* Mengunci warna background utama agar tetap bersih */
+.stApp {
+    background-color: #F8FAFC;
+}
+
+/* Header Utama - Gradient Teal ke Navy */
 .main-header {
     background: linear-gradient(135deg, #1E3A5F 0%, #0D9488 100%);
-    padding: 2rem; border-radius: 12px;
-    margin-bottom: 1.5rem; color: white;
+    padding: 2.5rem; 
+    border-radius: 12px;
+    margin-bottom: 2rem; 
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
+/* Kartu Angka (Metrics) - Bersih dengan efek hover */
 .metric-card {
-    background: white; border: 1px solid #E2E8F0;
-    border-radius: 10px; padding: 1.2rem;
-    text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    margin-bottom: 0.5rem;
+    background-color: #FFFFFF; 
+    border: 1px solid #E2E8F0;
+    border-radius: 12px; 
+    padding: 1.5rem;
+    text-align: center; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.metric-value { font-size: 1.8rem; font-weight: 700; color: #1E3A5F; }
-.metric-label { font-size: 0.82rem; color: #64748B; margin-top: 0.3rem; }
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.metric-value { 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    color: #0F172A; 
+}
+.metric-label { 
+    font-size: 0.95rem; 
+    font-weight: 600;
+    color: #64748B; 
+    margin-top: 0.2rem; 
+}
+
+/* Judul Sub-bagian */
 .section-title {
-    font-size: 1.2rem; font-weight: 700; color: #1E3A5F;
-    border-left: 4px solid #0D9488; padding-left: 0.8rem;
-    margin: 1.5rem 0 1rem 0;
+    font-size: 1.4rem; 
+    font-weight: 700; 
+    color: #1E3A5F;
+    border-left: 5px solid #0D9488; 
+    padding-left: 1rem;
+    margin: 2rem 0 1.5rem 0;
 }
-.info-box { background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:1rem; margin:1rem 0; }
-.warning-box { background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; padding:1rem; margin:1rem 0; }
-.success-box { background:#F0FDF4; border:1px solid #86EFAC; border-radius:8px; padding:1rem; margin:1rem 0; }
+
+/* KOTAK INFORMASI - MENGUNCI WARNA TEKS AGAR AMAN DARI DARK MODE */
+.info-box { 
+    background-color: #EFF6FF; 
+    border: 1px solid #BFDBFE; 
+    border-radius: 8px; 
+    padding: 1.2rem; 
+    color: #1E3A5F !important; /* Warna teks dipaksa Navy */
+    margin: 1rem 0; 
+}
+.warning-box { 
+    background-color: #FEF3C7; 
+    border: 1px solid #FDE68A; 
+    border-radius: 8px; 
+    padding: 1.2rem; 
+    color: #92400E !important; /* Warna teks dipaksa Cokelat Gelap */
+    margin: 1rem 0; 
+}
+.success-box { 
+    background-color: #F0FDF4; 
+    border: 1px solid #86EFAC; 
+    border-radius: 8px; 
+    padding: 1.2rem; 
+    color: #166534 !important; /* Warna teks dipaksa Hijau Gelap */
+    margin: 1rem 0; 
+}
 </style>
 """, unsafe_allow_html=True)
 
