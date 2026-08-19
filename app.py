@@ -325,8 +325,7 @@ with tab2:
 # ---- TAB 3: PREDIKSI & EVALUASI ----
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-box">Klik tombol di bawah untuk mengeksekusi prediksi dari model Colab.</div>', unsafe_allow_html=True)
-
+  
     if st.button("Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
             data_split = split_data_test_only(data_kabupaten)
