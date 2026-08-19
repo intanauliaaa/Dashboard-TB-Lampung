@@ -290,7 +290,7 @@ with tab1:
 
 with tab2:
     st.markdown('<div class="section-title">Data Kasus TB & Tren</div>', unsafe_allow_html=True)
-    s1, s2 = st.tabs(["Tren Waktu", "Heatmap & Statistik"])
+    s1, s2 = st.tabs(["Tren Waktu", "Heatmap"])
     with s1:
         c1, c2 = st.columns(2)
         with c1:
