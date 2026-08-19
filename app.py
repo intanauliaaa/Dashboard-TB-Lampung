@@ -346,7 +346,7 @@ if 'hasil_model' in st.session_state:
 
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
-        gc = df_eval.groupby('Model')[['MAE','RMSE','R²','Adj R²']].mean().round(3)
+        gc = df_eval.groupby('Model')[['MAE','RMSE','R²']].mean().round(3)
         rt = df_eval.groupby('Model')['Running Time (ms)'].sum().round(0)
         c1, c2 = st.columns(2)
         for i, (mn, row) in enumerate(gc.iterrows()):
@@ -369,7 +369,7 @@ if 'hasil_model' in st.session_state:
         if t_filter != 'Semua':
             tk_f    = [k for k, v in TARGET_LABELS.items() if v == t_filter][0]
             df_show = df_show[df_show['Target'] == tk_f]
-        df_pkab = df_show.groupby(['Kabupaten/Kota','Model'])[['MAE','RMSE','R²','Adj R²']].mean().round(3).reset_index()
+        df_pkab = df_show.groupby(['Kabupaten/Kota','Model'])[['MAE','RMSE','R²']].mean().round(3).reset_index()
         st.dataframe(df_pkab, use_container_width=True, height=380)
 
         # 3. KEMBALINYA GRAFIK MAE & RMSE
