@@ -326,7 +326,7 @@ with tab2:
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
   
-    if st.button("Jalankan Evaluasi Model", type="primary"):
+    if st.button("Jalankan Pelatihan Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
             data_split = split_data_test_only(data_kabupaten)
         with st.spinner("Memuat model (.pkl) dan menghitung evaluasi..."):
