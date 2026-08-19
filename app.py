@@ -203,7 +203,7 @@ def load_and_evaluate_model(data_split):
                         'Kabupaten/Kota': nama_kab, 'Model': mn,
                         'Target': tgt, 'Target Label': TARGET_LABELS[tgt],
                         'MAE': round(mae, 3), 'RMSE': round(rmse, 3),
-                        'R²': round(r2, 4), 'Adj R²': round(adj_r2(r2, n, k), 4),
+                        'R²': round(r2, 4),
                         'Running Time (ms)': round(res['rt'], 2),
                     })
                     
