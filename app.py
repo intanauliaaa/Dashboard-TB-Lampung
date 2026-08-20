@@ -139,6 +139,7 @@ KAMUS_FITUR = {
     'PRS_JAMBAN'  : 'Jamban Sehat (%)',
     'PRS_LLan'    : 'Jenis Lantai Layak (%)',
     'PRS_LLis'    : 'Akses Listrik Layak (%)',
+    'PRS_AML'     : 'Akses Air Minum Layak(%)',
     'PRS_Ven'     : 'Ventilasi Layak (%)',
     'JML_KSO_lag1': 'Kasus TB-SO (1 Bulan Lalu)',
     'JML_KSO_lag2': 'Kasus TB-SO (2 Bulan Lalu)',
