@@ -119,6 +119,18 @@ KAMUS_FITUR = {
     'JML_TBDM_lag3': 'Kasus TB-Diabetes Mellitus (3 Bulan Lalu)'
 }
 
+KELOMPOK_FAKTOR = {
+    'Epidemiologi & Faskes': ['JML_SPS', 'JML_SPG', 'JML_SPM', 'JML_SPL', 'JML_SPP', 'JML_FASKES'],
+    'Sosiodemografi': ['JML_PENDUDUK', 'JML_SUMK', 'PTPT', 'PTSMA', 'PTSMP', 'PTSD', 'PTTK'],
+    'Lingkungan Dasar': ['PRS_JAMBAN', 'PRS_LLan', 'PRS_LLis', 'PRS_Ven'],
+    'Riwayat Kasus (Lag)': [
+        'JML_KSO_lag1', 'JML_KSO_lag2', 'JML_KSO_lag3',
+        'JML_KRO_lag1', 'JML_KRO_lag2', 'JML_KRO_lag3',
+        'JML_TBHIV_lag1', 'JML_TBHIV_lag2', 'JML_TBHIV_lag3',
+        'JML_TBDM_lag1', 'JML_TBDM_lag2', 'JML_TBDM_lag3'
+    ]
+}
+
 # ============================================================
 # FUNGSI DATA
 # ============================================================
@@ -200,7 +212,7 @@ def load_and_evaluate_model(data_split):
             
             # PERTAHANAN 1: Cek apakah ada data setelah tanggal split (2025-01-01)
             if split['df_test_full'].empty:
-                st.error(f"❌ Data uji untuk {nama_kab} kosong! Pastikan CSV-mu memiliki data melewati tanggal batas {TANGGAL_SPLIT}.")
+                st.error(f"Data uji untuk {nama_kab} kosong! Pastikan CSV-mu memiliki data melewati tanggal batas {TANGGAL_SPLIT}.")
                 st.stop()
             
             # PERTAHANAN 2: Paksa semua data menjadi angka murni (buang teks nyasar)
@@ -359,7 +371,7 @@ with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
     st.markdown('<div class="info-box">Klik tombol di bawah untuk mengeksekusi prediksi dari model Colab.</div>', unsafe_allow_html=True)
 
-    if st.button("🚀 Jalankan Evaluasi Model", type="primary"):
+    if st.button(" Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
             data_split = split_data_test_only(data_kabupaten)
         with st.spinner("Memuat model (.pkl) dan menghitung evaluasi..."):
@@ -370,9 +382,9 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
-        st.success("✅ Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
+        st.success(" Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
 
-    # 👇 Kuncinya ada di sini: Baris ini WAJIB menjorok ke dalam (di bawah with tab3:)
+    #  Kuncinya ada di sini: Baris ini WAJIB menjorok ke dalam (di bawah with tab3:)
     if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
         df_eval        = st.session_state['df_eval']
@@ -513,24 +525,47 @@ with tab4:
                     except Exception:
                         st.info("XGBoost importance tidak tersedia.")
 
-            # Rekomendasi
+# Rekomendasi
             st.markdown("---")
-            st.markdown("#### Rekomendasi Tindakan")
-            fitur_list  = fitur_terpilih[kab_rek]
-            fitur_utama = fitur_list[0] if fitur_list else 'DEFAULT'
-            rek         = get_rek(fitur_utama)
-            df_kab      = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
-            best_mn     = df_kab.loc[df_kab['MAE'].idxmin(), 'Model'] if not df_kab.empty else '-'
-            mae_best    = round(df_kab['MAE'].min(), 3) if not df_kab.empty else '-'
+            st.markdown("#### 🎯 Rekomendasi Tindakan Terarah (Per Dimensi)")
             
-            # Menerjemahkan Faktor Dominan di Kartu dan Teks
-            fitur_utama_label = KAMUS_FITUR.get(fitur_utama, fitur_utama)
-            fitur_list_label  = [KAMUS_FITUR.get(f, f) for f in fitur_list]
+            df_kab   = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
+            best_mn  = df_kab.loc[df_kab['MAE'].idxmin(), 'Model'] if not df_kab.empty else '-'
+            mae_best = round(df_kab['MAE'].min(), 3) if not df_kab.empty else '-'
 
-            c1, c2, c3 = st.columns(3)
-            for col, val, lbl in [(c1, fitur_utama_label, 'Faktor Dominan'), (c2, best_mn, 'Model Terbaik'), (c3, mae_best, 'MAE Terbaik')]:
-                col.markdown(f'<div class="metric-card"><div class="metric-value" style="font-size:1rem;">{val}</div><div class="metric-label">{lbl}</div></div>', unsafe_allow_html=True)
+            # Menampilkan info model terbaik di atas
+            c1, c2 = st.columns(2)
+            c1.markdown(f'<div class="metric-card" style="padding:1rem;"><div class="metric-value" style="font-size:1.2rem;">{best_mn}</div><div class="metric-label">Model Prediksi Terbaik</div></div>', unsafe_allow_html=True)
+            c2.markdown(f'<div class="metric-card" style="padding:1rem;"><div class="metric-value" style="font-size:1.2rem;">{mae_best}</div><div class="metric-label">Nilai Error (MAE) Terendah</div></div>', unsafe_allow_html=True)
 
-            st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list_label)}</div>', unsafe_allow_html=True)
-            st.markdown("---")
+            # Mengambil data Feature Importance lengkap
+            imp = importance_all[kab_rek] 
+            
+            # Iterasi untuk mencari faktor paling dominan di SETIAP kategori
+            for nama_kategori, daftar_fitur in KELOMPOK_FAKTOR.items():
+                fitur_tersedia = [f for f in daftar_fitur if f in imp.index]
+                
+                if fitur_tersedia:
+                    # Urutkan fitur dari yang paling penting khusus di kategori ini
+                    imp_kategori = imp[fitur_tersedia].sort_values(ascending=False)
+                    fitur_tertinggi = imp_kategori.index[0]
+                    
+                    label_fitur = KAMUS_FITUR.get(fitur_tertinggi, fitur_tertinggi)
+                    rekomendasi_teks = get_rek(fitur_tertinggi)
+                    
+                    # Cetak UI Kartu Rekomendasi yang elegan
+                    st.markdown(f"""
+                    <div style="background-color: #F8FAFC; border-left: 5px solid #0D9488; padding: 1.2rem; margin-bottom: 1rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <div style="font-size: 1.15rem; font-weight: 700; color: #1E3A5F; margin-bottom: 0.5rem;">
+                            Dimensi {nama_kategori}
+                        </div>
+                        <div style="color: #64748B; font-size: 0.95rem; margin-bottom: 0.5rem;">
+                            <strong>Indikator Paling Kritis:</strong> <span style="color:#EA580C;">{label_fitur}</span>
+                        </div>
+                        <div style="color: #0F172A; font-weight: 500; line-height: 1.5;">
+                            <strong>Saran Intervensi:</strong> {rekomendasi_teks}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.markdown("---")
 st.caption("© 2026 · Dashboard TB Lampung · Random Forest & XGBoost")
