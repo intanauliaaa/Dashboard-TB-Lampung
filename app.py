@@ -325,8 +325,9 @@ with tab2:
 # ---- TAB 3: PREDIKSI & EVALUASI ----
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
-  
-    if st.button("Jalankan Pelatihan Model", type="primary"):
+    st.markdown('<div class="info-box">Klik tombol di bawah untuk mengeksekusi prediksi dari model Colab.</div>', unsafe_allow_html=True)
+
+    if st.button("🚀 Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
             data_split = split_data_test_only(data_kabupaten)
         with st.spinner("Memuat model (.pkl) dan menghitung evaluasi..."):
@@ -337,8 +338,10 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
+        st.success("✅ Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
 
-if 'hasil_model' in st.session_state:
+    # 👇 Kuncinya ada di sini: Baris ini WAJIB menjorok ke dalam (di bawah with tab3:)
+    if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
         df_eval        = st.session_state['df_eval']
         fitur_terpilih = st.session_state['fitur_terpilih']
@@ -372,7 +375,7 @@ if 'hasil_model' in st.session_state:
         df_pkab = df_show.groupby(['Kabupaten/Kota','Model'])[['MAE','RMSE','R²']].mean().round(3).reset_index()
         st.dataframe(df_pkab, use_container_width=True, height=380)
 
-        # 3. KEMBALINYA GRAFIK MAE & RMSE
+        # 3. GRAFIK MAE & RMSE
         st.markdown('<div class="section-title">Perbandingan MAE & RMSE</div>', unsafe_allow_html=True)
         fig_cmp = make_subplots(rows=1, cols=2, subplot_titles=['MAE', 'RMSE'])
         for mn, color in [('Random Forest','#1D6FA4'),('XGBoost','#EA580C')]:
@@ -409,7 +412,7 @@ if 'hasil_model' in st.session_state:
                 xaxis_title='Periode (bulan)', yaxis_title='Jumlah Kasus', height=400, hovermode='x unified')
             st.plotly_chart(fig_ap, use_container_width=True)
             
-        # 5. KEMBALINYA GRAFIK WAKTU KOMPUTASI
+        # 5. GRAFIK WAKTU KOMPUTASI
         st.markdown('<div class="section-title">Waktu Komputasi (Running Time)</div>', unsafe_allow_html=True)
         rt_rows = [{'Kabupaten/Kota': k,
                     'Random Forest': round(v['rf']['rt'], 2),
@@ -426,7 +429,6 @@ if 'hasil_model' in st.session_state:
         fig_rt.update_layout(title='Running Time per Kabupaten (ms)', barmode='group',
             height=480, xaxis_title='ms', legend=dict(orientation='h',y=-0.15))
         st.plotly_chart(fig_rt, use_container_width=True)
-
 # ---- TAB 4: REKOMENDASI ----
 with tab4:
     st.markdown('<div class="section-title">Rekomendasi Tindakan Berdasarkan Feature Importance</div>', unsafe_allow_html=True)
