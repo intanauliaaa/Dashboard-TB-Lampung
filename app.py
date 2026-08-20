@@ -157,9 +157,9 @@ KAMUS_FITUR = {
 }
 
 KELOMPOK_FAKTOR = {
-    'Epidemiologi & Faskes': ['JML_SPS', 'JML_SPG', 'JML_SPM', 'JML_SPL', 'JML_SPP', 'JML_FASKES'],
+    'Epidemiologi': ['JML_SPS', 'JML_SPG', 'JML_SPM', 'JML_SPL', 'JML_SPP', 'JML_FASKES'],
     'Sosiodemografi': ['JML_PENDUDUK', 'JML_SUMK', 'PTPT', 'PTSMA', 'PTSMP', 'PTSD', 'PTTK'],
-    'Lingkungan Dasar': ['PRS_JAMBAN', 'PRS_LLan', 'PRS_LLis', 'PRS_Ven'],
+    'Lingkungan': ['PRS_JAMBAN', 'PRS_LLan', 'PRS_LLis', 'PRS_Ven'],
     'Riwayat Kasus (Lag)': [
         'JML_KSO_lag1', 'JML_KSO_lag2', 'JML_KSO_lag3',
         'JML_KRO_lag1', 'JML_KRO_lag2', 'JML_KRO_lag3',
