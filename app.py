@@ -87,6 +87,38 @@ REKOMENDASI = {
     'DEFAULT'    : "Lakukan evaluasi menyeluruh program TB di wilayah ini berdasarkan data terkini dari Dinas Kesehatan.",
 }
 
+KAMUS_FITUR = {
+    'JML_SPS'     : 'Jumlah TB-Status Pengobatan SEMBUH',
+    'JML_SPG'     : 'Jumlah TB-Status Pengobatan GAGAL',
+    'JML_SPM'     : 'Jumlah TB-Status Pengobatan MENGULANG',
+    'JML_SPL'     : 'Jumlah TB-Status Pengobatan LENGKAP',
+    'JML_SPP'     : 'Jumlah TB-Status Pengobatan PUTUS',
+    'JML_FASKES'  : 'Ketersediaan Fasilitas Pelayanan Kesehatan',
+    'JML_PENDUDUK': 'Kepadatan Penduduk',
+    'JML_SUMK'    : 'Upah Minimum Kabupaten/Kota',
+    'PTPT'        : 'Pendidikan Terakhir-PT',
+    'PTSMA'        : 'Pendidikan Terakhir-SMA',
+    'PTSMP'        : 'Pendidikan Terakhir-SMP',
+    'PTSD'        : 'Pendidikan Terakhir-SD',
+    'PTTK'        : 'Pendidikan Terakhir-TK',
+    'PRS_JAMBAN'  : 'Jamban Sehat (%)',
+    'PRS_LLan'    : 'Jenis Lantai Layak (%)',
+    'PRS_LLis'    : 'Akses Listrik Layak (%)',
+    'PRS_Ven'     : 'Ventilasi Layak (%)',
+    'JML_KSO_lag1': 'Kasus TB-SO (1 Bulan Lalu)',
+    'JML_KSO_lag2': 'Kasus TB-SO (2 Bulan Lalu)',
+    'JML_KSO_lag3': 'Kasus TB-SO (3 Bulan Lalu)',
+    'JML_KRO_lag1': 'Kasus TB-RO (1 Bulan Lalu)',
+    'JML_KRO_lag2': 'Kasus TB-RO (2 Bulan Lalu)',
+    'JML_KRO_lag3': 'Kasus TB-RO (3 Bulan Lalu)',
+    'JML_TBHIV_lag1': 'Kasus TB-HIV (1 Bulan Lalu)',
+    'JML_TBHIV_lag2': 'Kasus TB-HIV (2 Bulan Lalu)',
+    'JML_TBHIV_lag3': 'Kasus TB-HIV (3 Bulan Lalu)',
+    'JML_TBDM_lag1': 'Kasus TB-Diabetes Mellitus (1 Bulan Lalu)',
+    'JML_TBDM_lag2': 'Kasus TB-Diabetes Mellitus (2 Bulan Lalu)',
+    'JML_TBDM_lag3': 'Kasus TB-Diabetes Mellitus (3 Bulan Lalu)'
+}
+
 # ============================================================
 # FUNGSI DATA
 # ============================================================
@@ -429,12 +461,13 @@ with tab3:
         fig_rt.update_layout(title='Running Time per Kabupaten (ms)', barmode='group',
             height=480, xaxis_title='ms', legend=dict(orientation='h',y=-0.15))
         st.plotly_chart(fig_rt, use_container_width=True)
+
 # ---- TAB 4: REKOMENDASI ----
 with tab4:
     st.markdown('<div class="section-title">Rekomendasi Tindakan Berdasarkan Feature Importance</div>', unsafe_allow_html=True)
 
     if 'fitur_terpilih' not in st.session_state:
-        st.markdown('<div class="warning-box">Latih model terlebih dahulu di tab <strong>Prediksi & Evaluasi</strong>.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="warning-box">Jalankan evaluasi model terlebih dahulu di tab <strong>Prediksi & Evaluasi</strong>.</div>', unsafe_allow_html=True)
     else:
         fitur_terpilih  = st.session_state['fitur_terpilih']
         importance_all  = st.session_state['importance_all']
@@ -451,7 +484,11 @@ with tab4:
                 thr    = imp.mean()
                 top10  = imp.head(10)
                 warna  = ['#1D6FA4' if s >= thr else '#A8DADC' for s in top10]
-                fig_rf = go.Figure(go.Bar(x=top10.values[::-1], y=top10.index[::-1],
+                
+                # Menerjemahkan nama variabel di Sumbu Y Grafik RF
+                label_y_rf = [KAMUS_FITUR.get(x, x) for x in top10.index[::-1]]
+                
+                fig_rf = go.Figure(go.Bar(x=top10.values[::-1], y=label_y_rf,
                     orientation='h', marker_color=warna[::-1], text=[f'{v:.3f}' for v in top10.values[::-1]], textposition='outside'))
                 fig_rf.add_vline(x=thr, line_dash='dash', line_color='red', annotation_text=f'Threshold ({thr:.3f})')
                 fig_rf.update_layout(height=360, title=f'{kab_rek}', showlegend=False, xaxis_title='Importance Score')
@@ -464,8 +501,12 @@ with tab4:
                     fitur = fitur_terpilih[kab_rek]
                     try:
                         skor = np.mean([m.feature_importances_ for m in xgb_m.estimators_], axis=0)
-                        df_xi = pd.Series(skor, index=fitur).sort_values(ascending=False)
-                        fig_xg = go.Figure(go.Bar(x=df_xi.values[::-1], y=df_xi.index[::-1],
+                        df_xi = pd.Series(skor, index=fitur).sort_values(ascending=False).head(10)
+                        
+                        # Menerjemahkan nama variabel di Sumbu Y Grafik XGBoost
+                        label_y_xgb = [KAMUS_FITUR.get(x, x) for x in df_xi.index[::-1]]
+                        
+                        fig_xg = go.Figure(go.Bar(x=df_xi.values[::-1], y=label_y_xgb,
                             orientation='h', marker_color='#EA580C', text=[f'{v:.3f}' for v in df_xi.values[::-1]], textposition='outside'))
                         fig_xg.update_layout(height=360, title=f'{kab_rek}', showlegend=False, xaxis_title='Importance Score')
                         st.plotly_chart(fig_xg, use_container_width=True)
@@ -481,11 +522,15 @@ with tab4:
             df_kab      = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
             best_mn     = df_kab.loc[df_kab['MAE'].idxmin(), 'Model'] if not df_kab.empty else '-'
             mae_best    = round(df_kab['MAE'].min(), 3) if not df_kab.empty else '-'
+            
+            # Menerjemahkan Faktor Dominan di Kartu dan Teks
+            fitur_utama_label = KAMUS_FITUR.get(fitur_utama, fitur_utama)
+            fitur_list_label  = [KAMUS_FITUR.get(f, f) for f in fitur_list]
 
             c1, c2, c3 = st.columns(3)
-            for col, val, lbl in [(c1, fitur_utama, 'Faktor Dominan'), (c2, best_mn, 'Model Terbaik'), (c3, mae_best, 'MAE Terbaik')]:
+            for col, val, lbl in [(c1, fitur_utama_label, 'Faktor Dominan'), (c2, best_mn, 'Model Terbaik'), (c3, mae_best, 'MAE Terbaik')]:
                 col.markdown(f'<div class="metric-card"><div class="metric-value" style="font-size:1rem;">{val}</div><div class="metric-label">{lbl}</div></div>', unsafe_allow_html=True)
 
-            st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list)}</div>', unsafe_allow_html=True)
-st.markdown("---")
+            st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list_label)}</div>', unsafe_allow_html=True)
+            st.markdown("---")
 st.caption("© 2026 · Dashboard TB Lampung · Random Forest & XGBoost")
