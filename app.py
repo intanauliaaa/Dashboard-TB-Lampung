@@ -404,7 +404,6 @@ with tab2:
 # ---- TAB 3: PREDIKSI & EVALUASI ----
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-box">Klik tombol di bawah untuk mengeksekusi prediksi dari model Colab.</div>', unsafe_allow_html=True)
 
     if st.button(" Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
@@ -417,7 +416,6 @@ with tab3:
             'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
             'data_split': data_split,
         })
-        st.success(" Evaluasi berhasil! Seluruh data metrik kini 100% identik dengan hasil di Colab.")
 
     #  Kuncinya ada di sini: Baris ini WAJIB menjorok ke dalam (di bawah with tab3:)
     if 'hasil_model' in st.session_state:
