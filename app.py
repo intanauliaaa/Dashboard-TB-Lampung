@@ -97,7 +97,8 @@ REKOMENDASI = {
     'PRS_LLan'    : "Advokasi program bedah rumah sehat dengan Dinas Perkim untuk mengurangi kondisi lantai tanah/lembap yang menjadi tempat kuman berkembang biak.",
     'PRS_LLis'    : "Perbaiki infrastruktur dasar wilayah; daerah dengan akses listrik rendah umumnya terpencil dan membutuhkan layanan kesehatan keliling (mobile clinic).",
     'PRS_Ven'     : "Gencarkan penyuluhan 'Bedah Ventilasi' dan pentingnya pencahayaan sinar matahari pagi di dalam rumah untuk membunuh kuman M. tuberculosis.",
-
+    'PRS_AML'     : "Tingkatkan kolaborasi lintas sektor bersama Dinas PUPR untuk perluasan sarana air bersih, serta terapkan pilar STBM untuk pengelolaan air minum rumah tangga guna mencegah penurunan imunitas.",
+    
     # 4. FAKTOR RIWAYAT KASUS (LAG FEATURES)
     # --- Trend TB-SO (Sensitif Obat) ---
     'JML_KSO_lag1': "Pantau ketat lonjakan kasus TB Sensitif Obat bulan lalu; pastikan ketersediaan Obat Anti Tuberkulosis (OAT) lini pertama aman di seluruh faskes.",
