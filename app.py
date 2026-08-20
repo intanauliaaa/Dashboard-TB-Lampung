@@ -75,16 +75,51 @@ KOORDINAT = {
 }
 
 REKOMENDASI = {
-    'JML_SPS'    : "Tingkatkan kapasitas skrining TB — jumlah suspek tinggi mengindikasikan perlunya penambahan tenaga kesehatan dan alat diagnostik.",
-    'JML_SPL'    : "Perkuat layanan TB di faskes tingkat lanjut — kasus pasien lanjutan perlu pemantauan lebih intensif.",
-    'JML_FASKES' : "Tambah fasilitas kesehatan di wilayah dengan akses terbatas untuk meningkatkan cakupan deteksi TB.",
-    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk — tingkatkan sosialisasi dan deteksi aktif di komunitas.",
-    'PRS_LLis'   : "Perbaiki kondisi sosiodemografi — wilayah dengan akses listrik rendah cenderung memiliki faktor risiko TB lebih tinggi.",
-    'PRS_JAMBAN' : "Tingkatkan sanitasi dasar — persentase rumah dengan jamban layak berpengaruh terhadap penularan TB.",
-    'JML_KSO_lag1': "Pantau tren kasus bulan sebelumnya — lonjakan TB-SO perlu respons cepat dalam 1 bulan ke depan.",
-    'JML_KSO_lag2': "Evaluasi program 2 bulan terakhir — pola kasus historis mengindikasikan perlunya penyesuaian intervensi.",
-    'JML_KSO_lag3': "Tinjau program TB kuartalan — tren 3 bulan menjadi acuan perencanaan anggaran dan sumber daya.",
-    'DEFAULT'    : "Lakukan evaluasi menyeluruh program TB di wilayah ini berdasarkan data terkini dari Dinas Kesehatan.",
+    # 1. FAKTOR EPIDEMIOLOGI & STATUS PENGOBATAN
+    'JML_SPS'     : "Pertahankan strategi Pengawas Menelan Obat (PMO) yang terbukti berhasil menyembuhkan pasien di wilayah ini.",
+    'JML_SPG'     : "Lakukan investigasi penyebab kegagalan pengobatan (misal: uji resistensi obat) dan tingkatkan pemantauan kepatuhan minum obat secara ketat.",
+    'JML_SPM'     : "Evaluasi efektivitas regimen obat sebelumnya dan perketat pendampingan psikologis/medis bagi pasien yang terpaksa mengulang siklus pengobatannya.",
+    'JML_SPL'     : "Lanjutkan pendampingan dan pemantauan berkala bagi pasien yang telah menyelesaikan pengobatan untuk mencegah terjadinya kekambuhan (relaps).",
+    'JML_SPP'     : "Gencarkan pelacakan pasien mangkir (Loss to Follow-Up) dengan melibatkan kader desa, serta berikan edukasi intensif mengenai bahaya putus obat.",
+    'JML_FASKES'  : "Optimalkan jejaring layanan TB dan pemerataan Fasilitas Pelayanan Kesehatan agar mudah dijangkau oleh masyarakat di daerah terpencil.",
+
+    # 2. FAKTOR SOSIODEMOGRAFI & EKONOMI
+    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk dengan meningkatkan deteksi aktif (Active Case Finding) dan skrining massal di ruang publik.",
+    'JML_SUMK'    : "Beri dukungan nutrisi atau perlindungan sosial bagi pasien TB di wilayah rentan secara ekonomi agar pengobatan tidak terputus akibat kendala biaya.",
+    'PTPT'        : "Libatkan kelompok terpelajar (mahasiswa/akademisi) sebagai agen promotor kesehatan TB dan pelopor kampanye eliminasi TB digital.",
+    'PTSMA'       : "Integrasikan edukasi pencegahan TB ke dalam program Usaha Kesehatan Sekolah (UKS) dan libatkan kader remaja di tingkat sekolah menengah.",
+    'PTSMP'       : "Gunakan pendekatan komunikasi interpersonal yang lebih praktis untuk meningkatkan kesadaran remaja dan warga tentang penularan TB.",
+    'PTSD'        : "Fokuskan edukasi TB menggunakan alat peraga visual sederhana dan pendekatan kultural melalui tokoh masyarakat atau pemuka agama setempat.",
+    'PTTK'        : "Tingkatkan edukasi Perilaku Hidup Bersih dan Sehat (PHBS) dasar di lingkup keluarga untuk mencegah penularan TB pada anak usia dini.",
+
+    # 3. FAKTOR LINGKUNGAN (SANITASI & RUMAH)
+    'PRS_JAMBAN'  : "Tingkatkan kolaborasi dengan program Sanitasi Total Berbasis Masyarakat (STBM) untuk menekan risiko penyakit lingkungan yang dapat menurunkan imun.",
+    'PRS_LLan'    : "Advokasi program bedah rumah sehat dengan Dinas Perkim untuk mengurangi kondisi lantai tanah/lembap yang menjadi tempat kuman berkembang biak.",
+    'PRS_LLis'    : "Perbaiki infrastruktur dasar wilayah; daerah dengan akses listrik rendah umumnya terpencil dan membutuhkan layanan kesehatan keliling (mobile clinic).",
+    'PRS_Ven'     : "Gencarkan penyuluhan 'Bedah Ventilasi' dan pentingnya pencahayaan sinar matahari pagi di dalam rumah untuk membunuh kuman M. tuberculosis.",
+
+    # 4. FAKTOR RIWAYAT KASUS (LAG FEATURES)
+    # --- Trend TB-SO (Sensitif Obat) ---
+    'JML_KSO_lag1': "Pantau ketat lonjakan kasus TB Sensitif Obat bulan lalu; pastikan ketersediaan Obat Anti Tuberkulosis (OAT) lini pertama aman di seluruh faskes.",
+    'JML_KSO_lag2': "Evaluasi intervensi program 2 bulan terakhir; pola historis menunjukkan perlunya penyesuaian strategi penemuan kasus SO secara cepat.",
+    'JML_KSO_lag3': "Tinjau program pengendalian TB-SO secara kuartalan; tren 3 bulan ini harus menjadi acuan alokasi anggaran penanganan berikutnya.",
+    
+    # --- Trend TB-RO (Resisten Obat) ---
+    'JML_KRO_lag1': "Waspada tren penyebaran TB Resisten Obat (MDR-TB); segera tingkatkan kapasitas ruang isolasi dan amankan logistik OAT lini kedua.",
+    'JML_KRO_lag2': "Perketat investigasi kontak (Contact Tracing) dari pasien TB-RO 2 bulan terakhir untuk memutus rantai penularan kebal obat di komunitas.",
+    'JML_KRO_lag3': "Evaluasi kepatuhan minum obat secara kuartalan untuk mencegah mutasi masal kuman TB-SO menjadi TB-RO akibat pengobatan yang tidak tuntas.",
+
+    # --- Trend Koinfeksi TB-HIV ---
+    'JML_TBHIV_lag1': "Tingkatkan program kolaborasi TB-HIV; pastikan setiap pasien TB baru langsung mendapatkan tawaran skrining VCT (Voluntary Counseling and Testing).",
+    'JML_TBHIV_lag2': "Optimalkan layanan koinfeksi 2 bulan terakhir; pastikan ketersediaan terapi ARV (untuk HIV) dan OAT (untuk TB) terdistribusi dan berjalan beriringan.",
+    'JML_TBHIV_lag3': "Analisis tren kuartalan TB-HIV untuk memetakan populasi kunci dan mengarahkan promosi kesehatan reproduksi yang lebih terarah.",
+
+    # --- Trend Komorbid TB-DM (Diabetes Mellitus) ---
+    'JML_TBDM_lag1': "Integrasikan layanan Poli DOTS (TB) dengan Poli PTM (Penyakit Tidak Menular) untuk memantau dan mengendalikan kadar gula darah pasien.",
+    'JML_TBDM_lag2': "Gencarkan skrining gula darah bagi seluruh penderita TB aktif, berkaca dari tingginya tren kasus komorbid 2 bulan ke belakang.",
+    'JML_TBDM_lag3': "Tingkatkan kolaborasi edukasi gizi dan pengaturan pola makan bagi pasien TB secara kuartalan untuk menekan risiko komplikasi Diabetes.",
+
+    'DEFAULT'     : "Lakukan evaluasi menyeluruh terhadap program pengendalian TB di wilayah ini berdasarkan data epidemiologi dan demografi terkini dari Dinas Kesehatan."
 }
 
 KAMUS_FITUR = {
