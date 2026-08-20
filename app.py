@@ -560,9 +560,9 @@ with tab4:
                     except Exception:
                         st.info("XGBoost importance tidak tersedia.")
 
-# Rekomendasi
+            # Rekomendasi
             st.markdown("---")
-            st.markdown("#### 🎯 Rekomendasi Tindakan Terarah (Per Dimensi)")
+            st.markdown("#### Rekomendasi Tindakan Terarah (Per Faktor Pengaruh)")
             
             df_kab   = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
             best_mn  = df_kab.loc[df_kab['MAE'].idxmin(), 'Model'] if not df_kab.empty else '-'
@@ -592,7 +592,7 @@ with tab4:
                     st.markdown(f"""
                     <div style="background-color: #F8FAFC; border-left: 5px solid #0D9488; padding: 1.2rem; margin-bottom: 1rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                         <div style="font-size: 1.15rem; font-weight: 700; color: #1E3A5F; margin-bottom: 0.5rem;">
-                            Dimensi {nama_kategori}
+                            Faktor {nama_kategori}
                         </div>
                         <div style="color: #64748B; font-size: 0.95rem; margin-bottom: 0.5rem;">
                             <strong>Indikator Paling Kritis:</strong> <span style="color:#EA580C;">{label_fitur}</span>
