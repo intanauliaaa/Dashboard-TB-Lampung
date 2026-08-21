@@ -568,11 +568,6 @@ with tab4:
             best_mn  = df_kab.loc[df_kab['MAE'].idxmin(), 'Model'] if not df_kab.empty else '-'
             mae_best = round(df_kab['MAE'].min(), 3) if not df_kab.empty else '-'
 
-            # Menampilkan info model terbaik di atas
-            c1, c2 = st.columns(2)
-            c1.markdown(f'<div class="metric-card" style="padding:1rem;"><div class="metric-value" style="font-size:1.2rem;">{best_mn}</div><div class="metric-label">Model Prediksi Terbaik</div></div>', unsafe_allow_html=True)
-            c2.markdown(f'<div class="metric-card" style="padding:1rem;"><div class="metric-value" style="font-size:1.2rem;">{mae_best}</div><div class="metric-label">Nilai Error (MAE) Terendah</div></div>', unsafe_allow_html=True)
-
             # Mengambil data Feature Importance lengkap
             imp = importance_all[kab_rek] 
             
