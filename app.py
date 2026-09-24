@@ -520,6 +520,8 @@ with tab3:
             
             nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
             label_periode = [f"{b} {tahun_pilihan}" for b in nama_bulan]
+
+            st.write(f"Debug Info -> Jumlah Data RF: {len(hasil_pred_rf)} | Jumlah Data XGB: {len(hasil_pred_xgb)}")
             
             if len(hasil_pred_rf) == 12 and len(hasil_pred_xgb) == 12:
                 df_pred_tahun = pd.DataFrame({
