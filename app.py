@@ -318,22 +318,6 @@ with st.sidebar:
     if uploaded_files:
         st.success(f"{len(uploaded_files)} file terupload")
     st.divider()
-
-    # ============================================================
-# SIDEBAR
-# ============================================================
-with st.sidebar:
-    st.markdown("## TB Lampung")
-    st.markdown("**Dashboard Prediksi & Analisis**")
-    st.divider()
-    st.markdown("### Upload Data")
-    uploaded_files = st.file_uploader(
-        "Upload CSV per kabupaten/kota (15 file)",
-        type=['csv'], accept_multiple_files=True,
-    )
-    if uploaded_files:
-        st.success(f"{len(uploaded_files)} file terupload")
-    st.divider()
     
     st.markdown("### Parameter Prediksi")
     tahun_pilihan = st.selectbox(
