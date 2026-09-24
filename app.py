@@ -200,13 +200,17 @@ def buat_lag(data_kabupaten):
         data_kabupaten[nama_kab] = df
     return data_kabupaten
 
-def split_data_test_only(data_kabupaten):
-    # Kita hanya butuh data test dan kolom target karena model sudah pintar
+def split_data_test_only(data_kabupaten, tahun_pilihan):
     data_split = {}
     for nama_kab, df in data_kabupaten.items():
-        df    = df.sort_values(KOLOM_TANGGAL).reset_index(drop=True)
-        test  = df[df[KOLOM_TANGGAL] >= TANGGAL_SPLIT]
-        kt    = [c for c in KOLOM_TARGET if c in df.columns]
+        df = df.sort_values(KOLOM_TANGGAL).reset_index(drop=True)
+        
+        test = df[df[KOLOM_TANGGAL].dt.year == tahun_pilihan]
+        
+        if test.empty:
+            test = df.tail(12).copy() 
+            
+        kt = [c for c in KOLOM_TARGET if c in df.columns]
         data_split[nama_kab] = {
             'df_test_full': test,
             'y_test': test[kt],
@@ -313,6 +317,30 @@ with st.sidebar:
     )
     if uploaded_files:
         st.success(f"{len(uploaded_files)} file terupload")
+    st.divider()
+
+    # ============================================================
+# SIDEBAR
+# ============================================================
+with st.sidebar:
+    st.markdown("## TB Lampung")
+    st.markdown("**Dashboard Prediksi & Analisis**")
+    st.divider()
+    st.markdown("### Upload Data")
+    uploaded_files = st.file_uploader(
+        "Upload CSV per kabupaten/kota (15 file)",
+        type=['csv'], accept_multiple_files=True,
+    )
+    if uploaded_files:
+        st.success(f"{len(uploaded_files)} file terupload")
+    st.divider()
+    
+    st.markdown("### Parameter Prediksi")
+    tahun_pilihan = st.selectbox(
+        "Pilih Tahun Prediksi/Proyeksi:",
+        options=[2023, 2024, 2025, 2026, 2027, 2028],
+        index=2  
+    )
     st.divider()
     st.caption("© 2026 · Dashboard TB Lampung")
 
@@ -428,7 +456,7 @@ with tab3:
 
     if st.button(" Jalankan Evaluasi Model", type="primary"):
         with st.spinner("Mempersiapkan data uji..."):
-            data_split = split_data_test_only(data_kabupaten)
+            data_split = split_data_test_only(data_kabupaten, tahun_pilihan)
         with st.spinner("Memuat model (.pkl) dan menghitung evaluasi..."):
             hasil_model, df_eval, fitur_terpilih, importance_all = load_and_evaluate_model(data_split)
         
@@ -527,6 +555,17 @@ with tab3:
         fig_rt.update_layout(title='Running Time per Kabupaten (ms)', barmode='group',
             height=480, xaxis_title='ms', legend=dict(orientation='h',y=-0.15))
         st.plotly_chart(fig_rt, use_container_width=True)
+
+        # 5. METRIK WAKTU PREDIKSI (INFERENCE TIME)
+        st.markdown(f'<div class="section-title">Waktu Eksekusi Prediksi (Inference Time) — Tahun {tahun_pilihan}</div>', unsafe_allow_html=True)
+        
+        # Hitung rata-rata waktu prediksi saja dari hasil_model
+        rt_rf_avg = np.mean([v['rf']['rt'] for v in hasil_model.values()])
+        rt_xgb_avg = np.mean([v['xgb']['rt'] for v in hasil_model.values()])
+        
+        c_rt1, c_rt2 = st.columns(2)
+        c_rt1.metric(label="Rata-rata Prediksi RF (per Kabupaten)", value=f"{rt_rf_avg:.2f} ms")
+        c_rt2.metric(label="Rata-rata Prediksi XGBoost (per Kabupaten)", value=f"{rt_xgb_avg:.2f} ms")
 
 # ---- TAB 4: REKOMENDASI ----
 with tab4:
