@@ -200,15 +200,30 @@ def buat_lag(data_kabupaten):
         data_kabupaten[nama_kab] = df
     return data_kabupaten
 
+def predict_future_recursive(model, df_last_known, num_months, feature_cols):
+    predictions = []
+    current_features = df_last_known[feature_cols].iloc[-1:].copy()
+    for i in range(num_months):
+        y_pred = model.predict(current_features)[0]
+        predictions.append(y_pred)
+        if 'Lag_1' in feature_cols:
+            current_features['Lag_1'] = y_pred
+    return predictions
+
 def split_data_test_only(data_kabupaten, tahun_pilihan):
     data_split = {}
     for nama_kab, df in data_kabupaten.items():
         df = df.sort_values(KOLOM_TANGGAL).reset_index(drop=True)
-        
-        test = df[df[KOLOM_TANGGAL].dt.year == tahun_pilihan]
-        
+        test = df[df[KOLOM_TANGGAL].dt.year == tahun_pilihan].copy()
         if test.empty:
-            test = df.tail(12).copy() 
+            test = df.tail(12).copy()
+            selisih_tahun = tahun_pilihan - df[KOLOM_TANGGAL].dt.year.max()
+            
+            if selisih_tahun > 0:
+                kolom_num = test.select_dtypes(include=[np.number]).columns
+                for col in kolom_num:
+                    if col not in KOLOM_TARGET:
+                        test[col] = test[col] * ((1 + 0.015) ** selisih_tahun)
             
         kt = [c for c in KOLOM_TARGET if c in df.columns]
         data_split[nama_kab] = {
@@ -217,7 +232,6 @@ def split_data_test_only(data_kabupaten, tahun_pilihan):
             'kolom_tar': kt
         }
     return data_split
-
 def adj_r2(r2, n, k):
     if n - k - 1 <= 0: return np.nan
     return 1 - (1 - r2) * (n - 1) / (n - k - 1)
@@ -450,12 +464,21 @@ with tab3:
             'data_split': data_split,
         })
 
-    #  Kuncinya ada di sini: Baris ini WAJIB menjorok ke dalam (di bawah with tab3:)
     if 'hasil_model' in st.session_state:
         hasil_model    = st.session_state['hasil_model']
         df_eval        = st.session_state['df_eval']
         fitur_terpilih = st.session_state['fitur_terpilih']
         data_split     = st.session_state['data_split']
+
+        st.subheader(f"Prediksi Kasus TB Tahun {tahun_pilihan}")
+
+        if tahun_pilihan > 2025:
+            jumlah_bulan = (tahun_pilihan - 2025) * 12
+            hasil_pred_rf = predict_future_recursive(model_rf, df_historis, jumlah_bulan, kolom_fitur)
+            hasil_pred_xgb = predict_future_recursive(model_xgb, df_historis, jumlah_bulan, kolom_fitur)
+        else:
+            hasil_pred_rf = hasil_model['rf']['pred']
+            hasil_pred_xgb = hasil_model['xgb']['pred']
 
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
