@@ -507,40 +507,41 @@ with tab3:
                     model_rf_obj = obj
                 elif 'xgb' in k_lower:
                     model_xgb_obj = obj
-                    keys = list(hasil_model.keys())
+            
+            keys = list(hasil_model.keys())
                     
-             if model_rf_obj is None and len(keys) > 0:
-                 item0 = hasil_model[keys[0]]
-                 model_rf_obj = item0['model'] if (isinstance(item0, dict) and 'model' in item0) else item0
-             if model_xgb_obj is None and len(keys) > 1:
-                 item1 = hasil_model[keys[1]]
-                 model_xgb_obj = item1['model'] if (isinstance(item1, dict) and 'model' in item1) else item1
+            if model_rf_obj is None and len(keys) > 0:
+                item0 = hasil_model[keys[0]]
+                model_rf_obj = item0['model'] if (isinstance(item0, dict) and 'model' in item0) else item0
+            if model_xgb_obj is None and len(keys) > 1:
+                item1 = hasil_model[keys[1]]
+                model_xgb_obj = item1['model'] if (isinstance(item1, dict) and 'model' in item1) else item1
     
-             df_historis = list(data_split.values())[0]['df_test_full']
-             kolom_fitur = fitur_terpilih
+            df_historis = list(data_split.values())[0]['df_test_full']
+            kolom_fitur = fitur_terpilih
     
-             pred_rf_raw = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur) if model_rf_obj else []
-             pred_xgb_raw = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur) if model_xgb_obj else []
+            pred_rf_raw = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur) if model_rf_obj else []
+            pred_xgb_raw = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur) if model_xgb_obj else []
     
-             hasil_pred_rf = list(pred_rf_raw)[-12:]
-             hasil_pred_xgb = list(pred_xgb_raw)[-12:]
+            hasil_pred_rf = list(pred_rf_raw)[-12:]
+            hasil_pred_xgb = list(pred_xgb_raw)[-12:]
     
-             nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
-             label_periode = [f"{b} {tahun_pilihan}" for b in nama_bulan]
+            nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+            label_periode = [f"{b} {tahun_pilihan}" for b in nama_bulan]
     
-             if len(hasil_pred_rf) == 12 and len(hasil_pred_xgb) == 12:
-                 df_pred_tahun = pd.DataFrame({
-                     'Periode': label_periode,
-                     'Prediksi Random Forest': hasil_pred_rf,
-                     'Prediksi XGBoost': hasil_pred_xgb
-                 })
+            if len(hasil_pred_rf) == 12 and len(hasil_pred_xgb) == 12:
+                df_pred_tahun = pd.DataFrame({
+                    'Periode': label_periode,
+                    'Prediksi Random Forest': hasil_pred_rf,
+                    'Prediksi XGBoost': hasil_pred_xgb
+                })
     
-                 st.markdown(f"### Visualisasi Tren Prediksi Kasus TB Tahun {tahun_pilihan}")
-                 st.line_chart(df_pred_tahun.set_index('Periode'))
-                 st.dataframe(df_pred_tahun, use_container_width=True)
+                st.markdown(f"### Visualisasi Tren Prediksi Kasus TB Tahun {tahun_pilihan}")
+                st.line_chart(df_pred_tahun.set_index('Periode'))
+                st.dataframe(df_pred_tahun, use_container_width=True)
              
-             else:
-                 st.warning("Data prediksi belum berjumlah 12 bulan. Silakan jalankan ulang evaluasi.")
+            else:
+                st.warning("Data prediksi belum berjumlah 12 bulan. Silakan jalankan ulang evaluasi.")
                     
         else:
             rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
