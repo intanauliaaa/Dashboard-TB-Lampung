@@ -495,40 +495,49 @@ with tab3:
         rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
         xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
 
-        if tahun_pilihan > 2025:
-            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
-            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
-
+if tahun_pilihan > 2025:
             model_rf_obj = None
-            if rf_key and rf_key in hasil_model:
-                rf_item = hasil_model[rf_key]
-                model_rf_obj = rf_item['model'] if isinstance(rf_item, dict) and 'model' in rf_item else rf_item
-
             model_xgb_obj = None
-            if xgb_key and xgb_key in hasil_model:
-                xgb_item = hasil_model[xgb_key]
-                model_xgb_obj = xgb_item['model'] if isinstance(xgb_item, dict) and 'model' in xgb_item else xgb_item
 
+            # 1. Loop semua isi hasil_model untuk mencari objek model
+            for k, v in hasil_model.items():
+                k_lower = str(k).lower()
+                obj = v['model'] if (isinstance(v, dict) and 'model' in v) else v
+
+                if 'forest' in k_lower or 'rf' in k_lower:
+                    model_rf_obj = obj
+                elif 'xgb' in k_lower:
+                    model_xgb_obj = obj
+
+            # 2. Fallback jika nama kunci tidak mengandung kata rf/xgb
+            keys = list(hasil_model.keys())
+            if model_rf_obj is None and len(keys) > 0:
+                item0 = hasil_model[keys[0]]
+                model_rf_obj = item0['model'] if (isinstance(item0, dict) and 'model' in item0) else item0
+            if model_xgb_obj is None and len(keys) > 1:
+                item1 = hasil_model[keys[1]]
+                model_xgb_obj = item1['model'] if (isinstance(item1, dict) and 'model' in item1) else item1
+
+            # 3. Jalankan prediksi rekursif
             df_historis = list(data_split.values())[0]['df_test_full']
             kolom_fitur = fitur_terpilih
 
             pred_rf_raw = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur) if model_rf_obj else []
             pred_xgb_raw = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur) if model_xgb_obj else []
-            
+
             hasil_pred_rf = list(pred_rf_raw)[-12:]
             hasil_pred_xgb = list(pred_xgb_raw)[-12:]
-            
+
             nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
             label_periode = [f"{b} {tahun_pilihan}" for b in nama_bulan]
 
-            st.write(f"Debug Info -> Jumlah Data RF: {len(hasil_pred_rf)} | Jumlah Data XGB: {len(hasil_pred_xgb)}")
-            
             if len(hasil_pred_rf) == 12 and len(hasil_pred_xgb) == 12:
                 df_pred_tahun = pd.DataFrame({
                     'Periode': label_periode,
                     'Prediksi Random Forest': hasil_pred_rf,
                     'Prediksi XGBoost': hasil_pred_xgb
                 })
+
                 st.markdown(f"### Visualisasi Tren Prediksi Kasus TB Tahun {tahun_pilihan}")
                 st.line_chart(df_pred_tahun.set_index('Periode'))
                 st.dataframe(df_pred_tahun, use_container_width=True)
@@ -536,12 +545,15 @@ with tab3:
                 st.warning("Data prediksi belum berjumlah 12 bulan. Silakan jalankan ulang evaluasi.")
 
         else:
+            # Tetap gunakan bagian else lama kamu untuk tahun <= 2025
+            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
+            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
+
             rf_item = hasil_model.get(rf_key, {}) if rf_key else {}
             xgb_item = hasil_model.get(xgb_key, {}) if xgb_key else {}
 
             hasil_pred_rf = rf_item.get('pred', rf_item.get('y_pred', rf_item)) if isinstance(rf_item, dict) else rf_item
             hasil_pred_xgb = xgb_item.get('pred', xgb_item.get('y_pred', xgb_item)) if isinstance(xgb_item, dict) else xgb_item
-        # =====================================================================
             
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
