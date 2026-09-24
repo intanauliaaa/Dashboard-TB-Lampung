@@ -200,15 +200,33 @@ def buat_lag(data_kabupaten):
         data_kabupaten[nama_kab] = df
     return data_kabupaten
 
-def predict_future_recursive(model, df_last_known, num_months, feature_cols):
+def predict_future_recursive(model, df_last_known, year_selected, feature_cols, base_year=2025):
+    total_months = (year_selected - base_year) * 12
     predictions = []
-    current_features = df_last_known[feature_cols].iloc[-1:].copy()
-    for i in range(num_months):
-        y_pred = model.predict(current_features)[0]
+    current_row = df_last_known[feature_cols].iloc[-1:].copy()
+    
+    for i in range(total_months):
+        # 1. Prediksi 1 bulan ke depan
+        y_pred = model.predict(current_row)[0]
         predictions.append(y_pred)
-        if 'Lag_1' in feature_cols:
-            current_features['Lag_1'] = y_pred
-    return predictions
+        
+        lag_cols = sorted([c for c in feature_cols if 'lag' in c.lower()], reverse=True)
+        if lag_cols:
+            for j in range(len(lag_cols)):
+                if j < len(lag_cols) - 1:
+                    current_row[lag_cols[j]] = current_row[lag_cols[j+1]].values
+                else:
+                    current_row[lag_cols[j]] = y_pred
+        elif 'Lag_1' in feature_cols:
+            current_row['Lag_1'] = y_pred
+
+        # 3. Update fitur Bulan jika ada (1 s.d. 12)
+        bulan_cols = [c for c in feature_cols if 'bulan' in c.lower() or 'month' in c.lower()]
+        for b_col in bulan_cols:
+            val = current_row[b_col].values[0]
+            current_row[b_col] = (val % 12) + 1
+
+    return predictions[-12:]
 
 def split_data_test_only(data_kabupaten, tahun_pilihan):
     data_split = {}
@@ -474,45 +492,29 @@ with tab3:
 
         st.subheader(f"Prediksi Kasus TB Tahun {tahun_pilihan}")
 
+rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
+        xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
+
         if tahun_pilihan > 2025:
-            jumlah_bulan = (tahun_pilihan - 2025) * 12
-            
-            # 1. Cari kunci model secara otomatis (mencari kata 'forest'/'rf' dan 'xgb')
-            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
-            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
+            # Ambil objek model
+            model_rf_obj = hasil_model[rf_key]['model'] if isinstance(hasil_model[rf_key], dict) and 'model' in hasil_model[rf_key] else hasil_model[rf_key]
+            model_xgb_obj = hasil_model[xgb_key]['model'] if isinstance(hasil_model[xgb_key], dict) and 'model' in hasil_model[xgb_key] else hasil_model[xgb_key]
 
-            # 2. Ambil objek model RF secara aman
-            if rf_key:
-                rf_item = hasil_model[rf_key]
-                model_rf_obj = rf_item['model'] if isinstance(rf_item, dict) and 'model' in rf_item else rf_item
-            else:
-                model_rf_obj = None
-
-            # 3. Ambil objek model XGBoost secara aman
-            if xgb_key:
-                xgb_item = hasil_model[xgb_key]
-                model_xgb_obj = xgb_item['model'] if isinstance(xgb_item, dict) and 'model' in xgb_item else xgb_item
-            else:
-                model_xgb_obj = None
-
-            # 4. Ambil sampel dataframe & fitur
             df_historis = list(data_split.values())[0]['df_test_full']
             kolom_fitur = fitur_terpilih
 
-            # 5. Eksekusi prediksi rekursif
-            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur) if model_rf_obj else []
-            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur) if model_xgb_obj else []
+            # Panggil fungsi rekursif baru dengan parameter tahun_pilihan
+            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur)
+            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur)
 
         else:
-            # Ambil kunci model untuk tahun <= 2025
-            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
-            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
-
+            # Untuk tahun historis (2023–2025)
             rf_item = hasil_model.get(rf_key, {}) if rf_key else {}
             xgb_item = hasil_model.get(xgb_key, {}) if xgb_key else {}
 
             hasil_pred_rf = rf_item.get('pred', rf_item.get('y_pred', rf_item)) if isinstance(rf_item, dict) else rf_item
             hasil_pred_xgb = xgb_item.get('pred', xgb_item.get('y_pred', xgb_item)) if isinstance(xgb_item, dict) else xgb_item
+        # =====================================================================
             
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
