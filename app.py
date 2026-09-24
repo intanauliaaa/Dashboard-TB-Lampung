@@ -507,8 +507,8 @@ with tab3:
                     model_rf_obj = obj
                 elif 'xgb' in k_lower:
                     model_xgb_obj = obj
-    
-             keys = list(hasil_model.keys())
+                    keys = list(hasil_model.keys())
+                    
              if model_rf_obj is None and len(keys) > 0:
                  item0 = hasil_model[keys[0]]
                  model_rf_obj = item0['model'] if (isinstance(item0, dict) and 'model' in item0) else item0
