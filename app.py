@@ -201,15 +201,26 @@ def buat_lag(data_kabupaten):
     return data_kabupaten
 
 def predict_future_recursive(model, df_last_known, year_selected, feature_cols, base_year=2025):
+    if model is None:
+        return []
+
+    if isinstance(feature_cols, dict):
+        val = list(feature_cols.values())[0]
+        feature_cols = val if isinstance(val, list) else list(feature_cols.keys())
+    elif not isinstance(feature_cols, list):
+        feature_cols = list(feature_cols)
+
     total_months = (year_selected - base_year) * 12
+    if total_months <= 0:
+        total_months = 12
+
     predictions = []
     current_row = df_last_known[feature_cols].iloc[-1:].copy()
-    
+
     for i in range(total_months):
-        # 1. Prediksi 1 bulan ke depan
         y_pred = model.predict(current_row)[0]
-        predictions.append(y_pred)
-        
+        predictions.append(float(y_pred))
+
         lag_cols = sorted([c for c in feature_cols if 'lag' in c.lower()], reverse=True)
         if lag_cols:
             for j in range(len(lag_cols)):
@@ -220,7 +231,6 @@ def predict_future_recursive(model, df_last_known, year_selected, feature_cols, 
         elif 'Lag_1' in feature_cols:
             current_row['Lag_1'] = y_pred
 
-        # 3. Update fitur Bulan jika ada (1 s.d. 12)
         bulan_cols = [c for c in feature_cols if 'bulan' in c.lower() or 'month' in c.lower()]
         for b_col in bulan_cols:
             val = current_row[b_col].values[0]
