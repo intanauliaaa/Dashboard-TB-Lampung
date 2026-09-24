@@ -490,8 +490,18 @@ with tab3:
             hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur)
 
         else:
-            hasil_pred_rf = hasil_model['rf']['pred']
-            hasil_pred_xgb = hasil_model['xgb']['pred']
+            rf_data = hasil_model.get('rf', {})
+            xgb_data = hasil_model.get('xgb', {})
+
+            if isinstance(rf_data, dict):
+                hasil_pred_rf = rf_data.get('pred', rf_data.get('y_pred', rf_data.get('prediksi')))
+            else:
+                hasil_pred_rf = rf_data
+
+            if isinstance(xgb_data, dict):
+                hasil_pred_xgb = xgb_data.get('pred', xgb_data.get('y_pred', xgb_data.get('prediksi')))
+            else:
+                hasil_pred_xgb = xgb_data
             
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
