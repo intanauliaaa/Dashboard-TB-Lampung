@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
+import plotly.express as px_map
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
@@ -370,7 +370,7 @@ with tab1:
         df_p['Lon'] = df_p['Lon'].astype(float)
         df_p['Nilai'] = df_p['Nilai'].astype(float)
         
-        fig_map = px.scatter_mapbox(
+        fig_map = px_map.scatter_mapbox(
             df_p,
             lat='Lat',
             lon='Lon',
