@@ -516,6 +516,8 @@ with tab3:
         data_split     = st.session_state['data_split']
 
         st.subheader(f"Prediksi Kasus TB Tahun {tahun_pilihan}")
+
+        st.write("Debug Struktur hasil_model:", hasil_model)
         
         rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
         xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
