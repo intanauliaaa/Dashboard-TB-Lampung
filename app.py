@@ -201,20 +201,6 @@ def buat_lag(data_kabupaten):
     return data_kabupaten
 
 def predict_future_recursive(model, df_last_known, year_selected, feature_cols, base_year=2025):
-    if not hasattr(model, 'predict'):
-        actual_model = None
-        if isinstance(model, dict):
-            for k, v in model.items():
-                if hasattr(v, 'predict'):
-                    actual_model = v
-                    break
-        elif isinstance(model, (list, tuple)):
-            for v in model:
-                if hasattr(v, 'predict'):
-                    actual_model = v
-                    break
-        model = actual_model
-
     if model is None or not hasattr(model, 'predict'):
         return []
 
@@ -232,20 +218,27 @@ def predict_future_recursive(model, df_last_known, year_selected, feature_cols, 
     current_row = df_last_known[feature_cols].iloc[-1:].copy()
 
     for i in range(total_months):
-        # 3. Eksekusi prediksi 1 bulan ke depan
-        y_pred = model.predict(current_row)[0]
-        predictions.append(float(y_pred))
+        raw_pred = model.predict(current_row)[0]
 
+        if hasattr(raw_pred, '__len__') and not isinstance(raw_pred, (str, bytes)):
+            y_pred_val = float(raw_pred[0])
+        else:
+            y_pred_val = float(raw_pred)
+
+        predictions.append(y_pred_val)
+
+        # 3. Update fitur Lag (memakai y_pred_val angka tunggal)
         lag_cols = sorted([c for c in feature_cols if 'lag' in c.lower()], reverse=True)
         if lag_cols:
             for j in range(len(lag_cols)):
                 if j < len(lag_cols) - 1:
                     current_row[lag_cols[j]] = current_row[lag_cols[j+1]].values
                 else:
-                    current_row[lag_cols[j]] = y_pred
+                    current_row[lag_cols[j]] = y_pred_val
         elif 'Lag_1' in feature_cols:
-            current_row['Lag_1'] = y_pred
+            current_row['Lag_1'] = y_pred_val
 
+        # 4. Update fitur Bulan (1 s.d. 12)
         bulan_cols = [c for c in feature_cols if 'bulan' in c.lower() or 'month' in c.lower()]
         for b_col in bulan_cols:
             val = current_row[b_col].values[0]
