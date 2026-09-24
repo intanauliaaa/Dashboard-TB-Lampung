@@ -484,6 +484,15 @@ with tab3:
                 model_rf_obj = hasil_model['rf']
                 model_xgb_obj = hasil_model['xgb']
 
+            df_historis = list(data_split.values())[0]['df_test_full']
+            kolom_fitur = fitur_terpilih
+            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur)
+            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur)
+
+        else:
+            hasil_pred_rf = hasil_model['rf']['pred']
+            hasil_pred_xgb = hasil_model['xgb']['pred']
+            
         df_historis = list(data_split.values())[0]['df_test_full']
         kolom_fitur = fitur_terpilih
         hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur)
