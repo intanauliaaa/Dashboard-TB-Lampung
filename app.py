@@ -365,7 +365,7 @@ with tab1:
         if tk in df.columns:
             total[nama] = df[tk].sum() if m_peta == 'Total Kasus' else round(df[tk].mean(), 2)
     df_p = pd.DataFrame([{'Kabupaten/Kota': k, 'Nilai': v, 'Lat': KOORDINAT.get(k, (-5, 105))[0], 'Lon': KOORDINAT.get(k, (-5, 105))[1]} for k, v in total.items()])
-    fig_map = px.scatter_mapbox(df_p, lat='Lat', lon='Lon', size='Nilai', color='Nilai', hover_name='Kabupaten/Kota', color_continuous_scale='YlOrRd', size_max=50, zoom=7, center={'lat': -4.8, 'lon': 105.2}, mapbox_style='carto-positron', title=f'{m_peta} {t_peta}')
+    fig_map = px.scatter_mapbox(df_p, lat='Lat', lon='Lon', size='Nilai', color='Nilai', hover_name='Kabupaten/Kota', color_continuous_scale='YlOrRd', size_max=50, zoom=7, center={'lat': -4.8, 'lon': 105.2}, mapbox_style='open-street-map', title=f'{m_peta} {t_peta}')
     fig_map.update_layout(height=480, margin=dict(l=0,r=0,t=40,b=0))
     st.plotly_chart(fig_map, use_container_width=True)
 
