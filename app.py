@@ -477,31 +477,42 @@ with tab3:
         if tahun_pilihan > 2025:
             jumlah_bulan = (tahun_pilihan - 2025) * 12
             
-            if 'model' in hasil_model['rf']:
-                model_rf_obj = hasil_model['rf']['model']
-                model_xgb_obj = hasil_model['xgb']['model']
-            else:
-                model_rf_obj = hasil_model['rf']
-                model_xgb_obj = hasil_model['xgb']
+            # 1. Cari kunci model secara otomatis (mencari kata 'forest'/'rf' dan 'xgb')
+            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
+            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
 
+            # 2. Ambil objek model RF secara aman
+            if rf_key:
+                rf_item = hasil_model[rf_key]
+                model_rf_obj = rf_item['model'] if isinstance(rf_item, dict) and 'model' in rf_item else rf_item
+            else:
+                model_rf_obj = None
+
+            # 3. Ambil objek model XGBoost secara aman
+            if xgb_key:
+                xgb_item = hasil_model[xgb_key]
+                model_xgb_obj = xgb_item['model'] if isinstance(xgb_item, dict) and 'model' in xgb_item else xgb_item
+            else:
+                model_xgb_obj = None
+
+            # 4. Ambil sampel dataframe & fitur
             df_historis = list(data_split.values())[0]['df_test_full']
             kolom_fitur = fitur_terpilih
-            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur)
-            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur)
+
+            # 5. Eksekusi prediksi rekursif
+            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur) if model_rf_obj else []
+            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur) if model_xgb_obj else []
 
         else:
-            rf_data = hasil_model.get('rf', {})
-            xgb_data = hasil_model.get('xgb', {})
+            # Ambil kunci model untuk tahun <= 2025
+            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
+            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
 
-            if isinstance(rf_data, dict):
-                hasil_pred_rf = rf_data.get('pred', rf_data.get('y_pred', rf_data.get('prediksi')))
-            else:
-                hasil_pred_rf = rf_data
+            rf_item = hasil_model.get(rf_key, {}) if rf_key else {}
+            xgb_item = hasil_model.get(xgb_key, {}) if xgb_key else {}
 
-            if isinstance(xgb_data, dict):
-                hasil_pred_xgb = xgb_data.get('pred', xgb_data.get('y_pred', xgb_data.get('prediksi')))
-            else:
-                hasil_pred_xgb = xgb_data
+            hasil_pred_rf = rf_item.get('pred', rf_item.get('y_pred', rf_item)) if isinstance(rf_item, dict) else rf_item
+            hasil_pred_xgb = xgb_item.get('pred', xgb_item.get('y_pred', xgb_item)) if isinstance(xgb_item, dict) else xgb_item
             
         # 1. KEMBALINYA RINGKASAN GLOBAL
         st.markdown('<div class="section-title">Ringkasan Evaluasi Global</div>', unsafe_allow_html=True)
