@@ -201,7 +201,21 @@ def buat_lag(data_kabupaten):
     return data_kabupaten
 
 def predict_future_recursive(model, df_last_known, year_selected, feature_cols, base_year=2025):
-    if model is None:
+    if not hasattr(model, 'predict'):
+        actual_model = None
+        if isinstance(model, dict):
+            for k, v in model.items():
+                if hasattr(v, 'predict'):
+                    actual_model = v
+                    break
+        elif isinstance(model, (list, tuple)):
+            for v in model:
+                if hasattr(v, 'predict'):
+                    actual_model = v
+                    break
+        model = actual_model
+
+    if model is None or not hasattr(model, 'predict'):
         return []
 
     if isinstance(feature_cols, dict):
@@ -218,6 +232,7 @@ def predict_future_recursive(model, df_last_known, year_selected, feature_cols, 
     current_row = df_last_known[feature_cols].iloc[-1:].copy()
 
     for i in range(total_months):
+        # 3. Eksekusi prediksi 1 bulan ke depan
         y_pred = model.predict(current_row)[0]
         predictions.append(float(y_pred))
 
