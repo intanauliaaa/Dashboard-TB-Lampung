@@ -514,6 +514,19 @@ with tab3:
 
             hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur) if model_rf_obj else []
             hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur) if model_xgb_obj else []
+            
+            nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+            label_periode = [f"{b} {tahun_pilihan}" for b in nama_bulan]
+            
+            df_pred_tahun = pd.DataFrame({
+                'Periode': label_periode,
+                'Prediksi Random Forest': hasil_pred_rf,
+                'Prediksi XGBoost': hasil_pred_xgb
+            })
+            
+            st.markdown(f"### Visualisasi Tren Prediksi Kasus TB Tahun {tahun_pilihan}")
+            st.line_chart(df_pred_tahun.set_index('Periode'))
+            st.dataframe(df_pred_tahun, use_container_width=True)
 
         else:
             rf_item = hasil_model.get(rf_key, {}) if rf_key else {}
