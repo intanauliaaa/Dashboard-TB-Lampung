@@ -459,8 +459,10 @@ with tab3:
             hasil_model, df_eval, fitur_terpilih, importance_all = load_and_evaluate_model(data_split)
         
         st.session_state.update({
-            'hasil_model': hasil_model, 'df_eval': df_eval,
-            'fitur_terpilih': fitur_terpilih, 'importance_all': importance_all,
+            'hasil_model': hasil_model, 
+            'df_eval': df_eval,
+            'fitur_terpilih': fitur_terpilih, 
+            'importance_all': importance_all,
             'data_split': data_split,
         })
 
@@ -474,8 +476,18 @@ with tab3:
 
         if tahun_pilihan > 2025:
             jumlah_bulan = (tahun_pilihan - 2025) * 12
-            hasil_pred_rf = predict_future_recursive(model_rf, df_historis, jumlah_bulan, kolom_fitur)
-            hasil_pred_xgb = predict_future_recursive(model_xgb, df_historis, jumlah_bulan, kolom_fitur)
+            
+            if 'model' in hasil_model['rf']:
+                model_rf_obj = hasil_model['rf']['model']
+                model_xgb_obj = hasil_model['xgb']['model']
+            else:
+                model_rf_obj = hasil_model['rf']
+                model_xgb_obj = hasil_model['xgb']
+
+    df_historis = list(data_split.values())[0]['df_test_full']
+            kolom_fitur = fitur_terpilih
+            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, jumlah_bulan, kolom_fitur)
+            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, jumlah_bulan, kolom_fitur)
         else:
             hasil_pred_rf = hasil_model['rf']['pred']
             hasil_pred_xgb = hasil_model['xgb']['pred']
