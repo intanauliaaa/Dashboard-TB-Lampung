@@ -370,7 +370,7 @@ with tab1:
         df_p['Lon'] = df_p['Lon'].astype(float)
         df_p['Nilai'] = df_p['Nilai'].astype(float)
         
-        fig_map = px_map.scatter_mapbox(
+        fig_map = px_map.scatter_map(
             df_p,
             lat='Lat',
             lon='Lon',
@@ -381,7 +381,7 @@ with tab1:
             size_max=50,
             zoom=7,
             center={'lat': -4.8, 'lon': 105.2},
-            mapbox_style='open-street-map',
+            map_style='open-street-map',
             title=f'{m_peta} {t_peta}'
         )
         st.plotly_chart(fig_map, use_container_width=True)
