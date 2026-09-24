@@ -496,19 +496,26 @@ with tab3:
         xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
 
         if tahun_pilihan > 2025:
-            # Ambil objek model
-            model_rf_obj = hasil_model[rf_key]['model'] if isinstance(hasil_model[rf_key], dict) and 'model' in hasil_model[rf_key] else hasil_model[rf_key]
-            model_xgb_obj = hasil_model[xgb_key]['model'] if isinstance(hasil_model[xgb_key], dict) and 'model' in hasil_model[xgb_key] else hasil_model[xgb_key]
+            rf_key = next((k for k in hasil_model.keys() if 'forest' in str(k).lower() or 'rf' in str(k).lower()), None)
+            xgb_key = next((k for k in hasil_model.keys() if 'xgb' in str(k).lower()), None)
+
+            model_rf_obj = None
+            if rf_key and rf_key in hasil_model:
+                rf_item = hasil_model[rf_key]
+                model_rf_obj = rf_item['model'] if isinstance(rf_item, dict) and 'model' in rf_item else rf_item
+
+            model_xgb_obj = None
+            if xgb_key and xgb_key in hasil_model:
+                xgb_item = hasil_model[xgb_key]
+                model_xgb_obj = xgb_item['model'] if isinstance(xgb_item, dict) and 'model' in xgb_item else xgb_item
 
             df_historis = list(data_split.values())[0]['df_test_full']
             kolom_fitur = fitur_terpilih
 
-            # Panggil fungsi rekursif baru dengan parameter tahun_pilihan
-            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur)
-            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur)
+            hasil_pred_rf = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur) if model_rf_obj else []
+            hasil_pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur) if model_xgb_obj else []
 
         else:
-            # Untuk tahun historis (2023–2025)
             rf_item = hasil_model.get(rf_key, {}) if rf_key else {}
             xgb_item = hasil_model.get(xgb_key, {}) if xgb_key else {}
 
