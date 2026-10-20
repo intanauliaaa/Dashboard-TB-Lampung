@@ -17,7 +17,6 @@ warnings.filterwarnings('ignore')
 # ============================================================
 st.set_page_config(
     page_title="Dashboard Prediksi Tuberkulosis",
-    page_icon="🫁",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -73,10 +72,10 @@ KOORDINAT = {
 }
 
 REKOMENDASI = {
-    'JML_SPS'    : "📋 Tingkatkan kapasitas skrining TB — jumlah suspek tinggi.",
-    'JML_SPL'    : "🏥 Perkuat layanan TB di faskes tingkat lanjut.",
-    'JML_PENDUDUK': "👥 Fokuskan program TB pada wilayah padat penduduk.",
-    'DEFAULT'    : "📊 Lakukan evaluasi menyeluruh program TB di wilayah ini.",
+    'JML_SPS'    : "Tingkatkan kapasitas skrining TB - jumlah suspek tinggi.",
+    'JML_SPL'    : "Perkuat layanan TB di faskes tingkat lanjut.",
+    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk.",
+    'DEFAULT'    : "Lakukan evaluasi menyeluruh program TB di wilayah ini.",
 }
 
 # ============================================================
@@ -186,43 +185,43 @@ def load_and_evaluate_model(data_split):
     return hasil_model, pd.DataFrame(hasil_eval), fitur_terpilih, importance_all
 
 # ============================================================
-# SIDEBAR (Sesuai Gambar 1)
+# SIDEBAR
 # ============================================================
 with st.sidebar:
-    st.markdown("## 🫁 TB Lampung")
+    st.markdown("## TB Lampung")
     st.markdown("**Dashboard Prediksi & Analisis**")
     st.divider()
-    st.markdown("### 📂 Upload Data")
+    st.markdown("### Upload Data")
     uploaded_files = st.file_uploader(
         "Upload CSV per kabupaten/kota (15 file)",
         type=['csv'], accept_multiple_files=True,
     )
     if uploaded_files:
-        st.success(f"✅ {len(uploaded_files)} file terupload")
+        st.success(f"{len(uploaded_files)} file terupload")
     st.divider()
     
-    st.markdown("### ⚙️ Parameter Prediksi")
+    st.markdown("### Parameter Prediksi")
     tahun_pilihan = st.selectbox(
         "Pilih Tahun Prediksi/Proyeksi:",
         options=[2023, 2024, 2025, 2026, 2027, 2028],
         index=2
     )
     st.divider()
-    st.caption("© 2026 · Dashboard TB Lampung")
+    st.caption("Dashboard TB Lampung")
 
 # ============================================================
 # HEADER
 # ============================================================
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin:0;font-size:1.8rem;">🫁 Dashboard Prediksi Tuberkulosis</h1>
+    <h1 style="margin:0;font-size:1.8rem;">Dashboard Prediksi Tuberkulosis</h1>
     <p style="margin:0.5rem 0 0 0;opacity:0.85;">Provinsi Lampung · Random Forest & XGBoost · 2021–2025</p>
 </div>
 """, unsafe_allow_html=True)
 
 if not uploaded_files:
     st.markdown("""<div class="info-box">
-    <h3>👈 Mulai dengan Upload Data</h3>
+    <h3>Mulai dengan Upload Data</h3>
     <p>Upload 15 file CSV kabupaten/kota di sidebar kiri.</p>
     </div>""", unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
@@ -230,19 +229,14 @@ if not uploaded_files:
         col.markdown(f'<div class="metric-card"><div class="metric-value">{val}</div><div class="metric-label">{lbl}</div></div>', unsafe_allow_html=True)
     st.stop()
 
-# Load & Proses Data
-with st.spinner("Memuat data..."):
-    data_kabupaten = load_semua_data(uploaded_files)
-with st.spinner("Membuat lag features..."):
-    data_kabupaten = buat_lag(data_kabupaten)
-
-data_split = split_data_test_only(data_kabupaten, tahun_pilihan)
-hasil_model, df_eval, fitur_terpilih, importance_all = load_and_evaluate_model(data_split)
+# Load & Proses Data Awal
+data_kabupaten = load_semua_data(uploaded_files)
+data_kabupaten = buat_lag(data_kabupaten)
 
 # ============================================================
 # TABS UTAMA
 # ============================================================
-tab1, tab2, tab3, tab4 = st.tabs(["🗺️ Sebaran Kasus", "📊 Data & Tren", "🤖 Prediksi & Evaluasi", "💡 Rekomendasi"])
+tab1, tab2, tab3, tab4 = st.tabs(["Sebaran Kasus", "Data & Tren", "Prediksi & Evaluasi", "Rekomendasi"])
 
 with tab1:
     st.markdown('<div class="section-title">Sebaran Kasus TB di Provinsi Lampung</div>', unsafe_allow_html=True)
@@ -283,34 +277,72 @@ with tab2:
 
 with tab3:
     st.markdown('<div class="section-title">Prediksi & Evaluasi Model</div>', unsafe_allow_html=True)
-    kab_aktif = st.selectbox("Pilih Kabupaten/Kota untuk Proyeksi", list(hasil_model.keys()), key='kab_proj')
-    
-    if tahun_pilihan > 2025:
-        model_rf_obj  = hasil_model[kab_aktif]['rf']['model']
-        model_xgb_obj = hasil_model[kab_aktif]['xgb']['model']
-        df_historis   = data_split[kab_aktif]['df_test_full']
-        kolom_fitur   = fitur_terpilih[kab_aktif]
+    st.markdown('<div class="info-box">Klik tombol di bawah untuk menjalankan evaluasi model dan memuat hasil pengujian.</div>', unsafe_allow_html=True)
 
-        pred_rf  = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur)
-        pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur)
+    if st.button("Jalankan Evaluasi Model", type="primary"):
+        with st.spinner("Memuat model dan menghitung evaluasi..."):
+            data_split = split_data_test_only(data_kabupaten, tahun_pilihan)
+            hasil_model, df_eval, fitur_terpilih, importance_all = load_and_evaluate_model(data_split)
+            st.session_state.update({
+                'hasil_model': hasil_model,
+                'df_eval': df_eval,
+                'fitur_terpilih': fitur_terpilih,
+                'importance_all': importance_all,
+                'data_split': data_split,
+            })
+        st.success("Evaluasi dan prediksi berhasil dijalankan!")
 
-        nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
-        df_pred_tahun = pd.DataFrame({
-            'Periode': [f"{b} {tahun_pilihan}" for b in nama_bulan],
-            'Prediksi Random Forest': pred_rf,
-            'Prediksi XGBoost': pred_xgb
-        })
-        st.markdown(f"### Proyeksi Kasus TB {kab_aktif} Tahun {tahun_pilihan}")
-        st.line_chart(df_pred_tahun.set_index('Periode'))
-        st.dataframe(df_pred_tahun, use_container_width=True)
-    else:
-        gc = df_eval.groupby('Model')[['MAE','RMSE','R²']].mean().round(3)
-        st.dataframe(gc, use_container_width=True)
+    if 'hasil_model' in st.session_state:
+        hasil_model    = st.session_state['hasil_model']
+        df_eval        = st.session_state['df_eval']
+        fitur_terpilih = st.session_state['fitur_terpilih']
+        data_split     = st.session_state['data_split']
+
+        if tahun_pilihan > 2025:
+            kab_aktif = st.selectbox("Pilih Kabupaten/Kota untuk Proyeksi", list(hasil_model.keys()), key='kab_proj')
+            model_rf_obj  = hasil_model[kab_aktif]['rf']['model']
+            model_xgb_obj = hasil_model[kab_aktif]['xgb']['model']
+            df_historis   = data_split[kab_aktif]['df_test_full']
+            kolom_fitur   = fitur_terpilih[kab_aktif]
+
+            pred_rf  = predict_future_recursive(model_rf_obj, df_historis, tahun_pilihan, kolom_fitur)
+            pred_xgb = predict_future_recursive(model_xgb_obj, df_historis, tahun_pilihan, kolom_fitur)
+
+            nama_bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+            df_pred_tahun = pd.DataFrame({
+                'Periode': [f"{b} {tahun_pilihan}" for b in nama_bulan],
+                'Prediksi Random Forest': pred_rf,
+                'Prediksi XGBoost': pred_xgb
+            })
+            st.markdown(f"### Proyeksi Kasus TB {kab_aktif} Tahun {tahun_pilihan}")
+            st.line_chart(df_pred_tahun.set_index('Periode'))
+            st.dataframe(df_pred_tahun, use_container_width=True)
+        else:
+            st.markdown("### Ringkasan Evaluasi Global")
+            gc = df_eval.groupby('Model')[['MAE','RMSE','R²']].mean().round(3)
+            c1, c2 = st.columns(2)
+            for i, (mn, row) in enumerate(gc.iterrows()):
+                col = c1 if i == 0 else c2
+                with col:
+                    st.markdown(f"""<div class="metric-card">
+                    <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;">{mn}</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+                        <div><div class="metric-value" style="font-size:1.2rem;">{row['MAE']}</div><div class="metric-label">MAE</div></div>
+                        <div><div class="metric-value" style="font-size:1.2rem;">{row['RMSE']}</div><div class="metric-label">RMSE</div></div>
+                        <div><div class="metric-value" style="font-size:1.2rem;">{row['R²']}</div><div class="metric-label">R²</div></div>
+                    </div></div>""", unsafe_allow_html=True)
+
+            st.markdown("### Evaluasi Per Kabupaten/Kota")
+            st.dataframe(df_eval, use_container_width=True, height=380)
 
 with tab4:
     st.markdown('<div class="section-title">Rekomendasi Tindakan</div>', unsafe_allow_html=True)
-    kab_rek = st.selectbox("Pilih Kabupaten", list(fitur_terpilih.keys()), key='kab_rek_s')
-    if kab_rek:
-        fitur_utama = fitur_terpilih[kab_rek][0]
-        st.markdown(f"**Faktor Dominan di {kab_rek}:** `{fitur_utama}`")
-        st.info(REKOMENDASI.get(fitur_utama, REKOMENDASI['DEFAULT']))
+    if 'fitur_terpilih' in st.session_state:
+        fitur_terpilih = st.session_state['fitur_terpilih']
+        kab_rek = st.selectbox("Pilih Kabupaten", list(fitur_terpilih.keys()), key='kab_rek_s')
+        if kab_rek:
+            fitur_utama = fitur_terpilih[kab_rek][0]
+            st.markdown(f"**Faktor Dominan di {kab_rek}:** `{fitur_utama}`")
+            st.info(REKOMENDASI.get(fitur_utama, REKOMENDASI['DEFAULT']))
+    else:
+        st.warning("Jalankan evaluasi model terlebih dahulu di tab Prediksi & Evaluasi.")
