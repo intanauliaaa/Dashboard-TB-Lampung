@@ -47,7 +47,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# KONSTANTA & KAMUS REKOMENDASI LENGKAP
+# KONSTANTA & KAMUS (DICTIONARY) STAKEHOLDER
 # ============================================================
 KOLOM_TARGET  = ['JML_KSO', 'JML_KRO', 'JML_TBHIV', 'JML_TBDM']
 TARGET_LABELS = {
@@ -72,33 +72,90 @@ KOORDINAT = {
 }
 
 REKOMENDASI = {
-    'JML_SPS'    : "Pertahankan strategi Pengawas Menelan Obat (PMO) yang terbukti berhasil menyembuhkan pasien di wilayah ini.",
-    'JML_SPG'    : "Lakukan investigasi penyebab kegagalan pengobatan dan tingkatkan pemantauan kepatuhan minum obat secara ketat.",
-    'JML_SPM'    : "Evaluasi efektivitas regimen obat sebelumnya dan perketat pendampingan medis bagi pasien yang mengulang pengobatan.",
-    'JML_SPL'    : "Lanjutkan pendampingan dan pemantauan berkala bagi pasien yang telah menyelesaikan pengobatan.",
-    'JML_SPP'    : "Gencarkan pelacakan pasien mangkir (Loss to Follow-Up) dengan melibatkan kader desa.",
-    'JML_FASKES' : "Optimalkan jejaring layanan TB dan pemerataan Fasilitas Pelayanan Kesehatan di daerah terpencil.",
-    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk dengan meningkatkan deteksi aktif (Active Case Finding).",
-    'JML_SUMK'   : "Beri dukungan nutrisi atau perlindungan sosial bagi pasien TB di wilayah rentan secara ekonomi.",
-    'PRS_JAMBAN' : "Tingkatkan kolaborasi dengan program Sanitasi Total Berbasis Masyarakat (STBM).",
-    'PRS_LLan'   : "Advokasi program bedah rumah sehat dengan Dinas Perkim untuk mengurangi kondisi lantai lembap.",
-    'PRS_LLis'   : "Perbaiki infrastruktur dasar wilayah; daerah dengan akses listrik rendah membutuhkan layanan kesehatan keliling.",
-    'PRS_Ven'    : "Gencarkan penyuluhan bedah ventilasi dan pentingnya pencahayaan sinar matahari pagi di dalam rumah.",
-    'PRS_AML'    : "Tingkatkan kolaborasi lintas sektor bersama Dinas PUPR untuk perluasan sarana air bersih.",
-    'JML_KSO_lag1': "Pantau ketat lonjakan kasus TB Sensitif Obat bulan lalu; pastikan ketersediaan OAT lini pertama aman.",
-    'JML_KSO_lag2': "Evaluasi intervensi program 2 bulan terakhir; pola historis menunjukkan perlunya penyesuaian strategi.",
-    'JML_KSO_lag3': "Tinjau program pengendalian TB-SO secara kuartalan sebagai acuan alokasi anggaran berikutnya.",
-    'JML_KRO_lag1': "Waspada tren penyebaran TB Resisten Obat; segera tingkatkan kapasitas ruang isolasi.",
-    'JML_TBHIV_lag1': "Tingkatkan program kolaborasi TB-HIV; pastikan setiap pasien TB baru langsung mendapatkan skrining VCT.",
-    'JML_TBDM_lag1': "Integrasikan layanan Poli DOTS dengan Poli PTM untuk memantau kadar gula darah pasien.",
-    'DEFAULT'    : "Lakukan evaluasi menyeluruh terhadap program pengendalian TB di wilayah ini berdasarkan data epidemiologi terkini."
+    # 1. FAKTOR EPIDEMIOLOGI & STATUS PENGOBATAN
+    'JML_SPS'     : "Pertahankan strategi Pengawas Menelan Obat (PMO) yang terbukti berhasil menyembuhkan pasien di wilayah ini.",
+    'JML_SPG'     : "Lakukan investigasi penyebab kegagalan pengobatan (misal: uji resistensi obat) dan tingkatkan pemantauan kepatuhan minum obat secara ketat.",
+    'JML_SPM'     : "Evaluasi efektivitas regimen obat sebelumnya dan perketat pendampingan psikologis/medis bagi pasien yang terpaksa mengulang siklus pengobatannya.",
+    'JML_SPL'     : "Lanjutkan pendampingan dan pemantauan berkala bagi pasien yang telah menyelesaikan pengobatan untuk mencegah terjadinya kekambuhan (relaps).",
+    'JML_SPP'     : "Gencarkan pelacakan pasien mangkir (Loss to Follow-Up) dengan melibatkan kader desa, serta berikan edukasi intensif mengenai bahaya putus obat.",
+    'JML_FASKES'  : "Optimalkan jejaring layanan TB dan pemerataan Fasilitas Pelayanan Kesehatan agar mudah dijangkau oleh masyarakat di daerah terpencil.",
+
+    # 2. FAKTOR SOSIODEMOGRAFI & EKONOMI
+    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk dengan meningkatkan deteksi aktif (Active Case Finding) dan skrining massal di ruang publik.",
+    'JML_SUMK'    : "Beri dukungan nutrisi atau perlindungan sosial bagi pasien TB di wilayah rentan secara ekonomi agar pengobatan tidak terputus akibat kendala biaya.",
+    'PTPT'        : "Libatkan kelompok terpelajar (mahasiswa/akademisi) sebagai agen promotor kesehatan TB dan pelopor kampanye eliminasi TB digital.",
+    'PTSMA'       : "Integrasikan edukasi pencegahan TB ke dalam program Usaha Kesehatan Sekolah (UKS) dan libatkan kader remaja di tingkat sekolah menengah.",
+    'PTSMP'       : "Gunakan pendekatan komunikasi interpersonal yang lebih praktis untuk meningkatkan kesadaran remaja dan warga tentang penularan TB.",
+    'PTSD'        : "Fokuskan edukasi TB menggunakan alat peraga visual sederhana dan pendekatan kultural melalui tokoh masyarakat atau pemuka agama setempat.",
+    'PTTK'        : "Tingkatkan edukasi Perilaku Hidup Bersih dan Sehat (PHBS) dasar di lingkup keluarga untuk mencegah penularan TB pada anak usia dini.",
+
+    # 3. FAKTOR LINGKUNGAN (SANITASI & RUMAH)
+    'PRS_JAMBAN'  : "Tingkatkan kolaborasi dengan program Sanitasi Total Berbasis Masyarakat (STBM) untuk menekan risiko penyakit lingkungan yang dapat menurunkan imun.",
+    'PRS_LLan'    : "Advokasi program bedah rumah sehat dengan Dinas Perkim untuk mengurangi kondisi lantai tanah/lembap yang menjadi tempat kuman berkembang biak.",
+    'PRS_LLis'    : "Perbaiki infrastruktur dasar wilayah; daerah dengan akses listrik rendah umumnya terpencil dan membutuhkan layanan kesehatan keliling (mobile clinic).",
+    'PRS_Ven'     : "Gencarkan penyuluhan 'Bedah Ventilasi' dan pentingnya pencahayaan sinar matahari pagi di dalam rumah untuk membunuh kuman M. tuberculosis.",
+    'PRS_AML'     : "Tingkatkan kolaborasi lintas sektor bersama Dinas PUPR untuk perluasan sarana air bersih, serta terapkan pilar STBM untuk pengelolaan air minum rumah tangga guna mencegah penurunan imunitas.",
+    
+    # 4. FAKTOR RIWAYAT KASUS (LAG FEATURES)
+    'JML_KSO_lag1': "Pantau ketat lonjakan kasus TB Sensitif Obat bulan lalu; pastikan ketersediaan Obat Anti Tuberkulosis (OAT) lini pertama aman di seluruh faskes.",
+    'JML_KSO_lag2': "Evaluasi intervensi program 2 bulan terakhir; pola historis menunjukkan perlunya penyesuaian strategi penemuan kasus SO secara cepat.",
+    'JML_KSO_lag3': "Tinjau program pengendalian TB-SO secara kuartalan; tren 3 bulan ini harus menjadi acuan alokasi anggaran penanganan berikutnya.",
+    'JML_KRO_lag1': "Waspada tren penyebaran TB Resisten Obat (MDR-TB); segera tingkatkan kapasitas ruang isolasi dan amankan logistik OAT lini kedua.",
+    'JML_KRO_lag2': "Perketat investigasi kontak (Contact Tracing) dari pasien TB-RO 2 bulan terakhir untuk memutus rantai penularan kebal obat di komunitas.",
+    'JML_KRO_lag3': "Evaluasi kepatuhan minum obat secara kuartalan untuk mencegah mutasi masal kuman TB-SO menjadi TB-RO akibat pengobatan yang tidak tuntas.",
+    'JML_TBHIV_lag1': "Tingkatkan program kolaborasi TB-HIV; pastikan setiap pasien TB baru langsung mendapatkan tawaran skrining VCT (Voluntary Counseling and Testing).",
+    'JML_TBHIV_lag2': "Optimalkan layanan koinfeksi 2 bulan terakhir; pastikan ketersediaan terapi ARV (untuk HIV) dan OAT (untuk TB) terdistribusi dan berjalan beriringan.",
+    'JML_TBHIV_lag3': "Analisis tren kuartalan TB-HIV untuk memetakan populasi kunci dan mengarahkan promosi kesehatan reproduksi yang lebih terarah.",
+    'JML_TBDM_lag1': "Integrasikan layanan Poli DOTS (TB) dengan Poli PTM (Penyakit Tidak Menular) untuk memantau dan mengendalikan kadar gula darah pasien.",
+    'JML_TBDM_lag2': "Gencarkan skrining gula darah bagi seluruh penderita TB aktif, berkaca dari tingginya tren kasus komorbid 2 bulan ke belakang.",
+    'JML_TBDM_lag3': "Tingkatkan kolaborasi edukasi gizi dan pengaturan pola makan bagi pasien TB secara kuartalan untuk menekan risiko komplikasi Diabetes.",
+
+    'DEFAULT'     : "Lakukan evaluasi menyeluruh terhadap program pengendalian TB di wilayah ini berdasarkan data epidemiologi dan demografi terkini dari Dinas Kesehatan."
+}
+
+KAMUS_FITUR = {
+    'JML_SPS'     : 'Jumlah TB-Status Pengobatan SEMBUH',
+    'JML_SPG'     : 'Jumlah TB-Status Pengobatan GAGAL',
+    'JML_SPM'     : 'Jumlah TB-Status Pengobatan MENGULANG',
+    'JML_SPL'     : 'Jumlah TB-Status Pengobatan LENGKAP',
+    'JML_SPP'     : 'Jumlah TB-Status Pengobatan PUTUS',
+    'JML_FASKES'  : 'Ketersediaan Fasilitas Pelayanan Kesehatan',
+    'JML_PENDUDUK': 'Kepadatan Penduduk',
+    'JML_SUMK'    : 'Upah Minimum Kabupaten/Kota',
+    'PTPT'        : 'Pendidikan Terakhir-PT',
+    'PTSMA'       : 'Pendidikan Terakhir-SMA',
+    'PTSMP'       : 'Pendidikan Terakhir-SMP',
+    'PTSD'        : 'Pendidikan Terakhir-SD',
+    'PTTK'        : 'Pendidikan Terakhir-TK',
+    'PRS_JAMBAN'  : 'Jamban Sehat (%)',
+    'PRS_LLan'    : 'Jenis Lantai Layak (%)',
+    'PRS_LLis'    : 'Akses Listrik Layak (%)',
+    'PRS_AML'     : 'Akses Air Minum Layak (%)',
+    'PRS_Ven'     : 'Ventilasi Layak (%)',
+    'JML_KSO_lag1': 'Kasus TB-SO (1 Bulan Lalu)',
+    'JML_KSO_lag2': 'Kasus TB-SO (2 Bulan Lalu)',
+    'JML_KSO_lag3': 'Kasus TB-SO (3 Bulan Lalu)',
+    'JML_KRO_lag1': 'Kasus TB-RO (1 Bulan Lalu)',
+    'JML_KRO_lag2': 'Kasus TB-RO (2 Bulan Lalu)',
+    'JML_KRO_lag3': 'Kasus TB-RO (3 Bulan Lalu)',
+    'JML_TBHIV_lag1': 'Kasus TB-HIV (1 Bulan Lalu)',
+    'JML_TBHIV_lag2': 'Kasus TB-HIV (2 Bulan Lalu)',
+    'JML_TBHIV_lag3': 'Kasus TB-HIV (3 Bulan Lalu)',
+    'JML_TBDM_lag1': 'Kasus TB-Diabetes Mellitus (1 Bulan Lalu)',
+    'JML_TBDM_lag2': 'Kasus TB-Diabetes Mellitus (2 Bulan Lalu)',
+    'JML_TBDM_lag3': 'Kasus TB-Diabetes Mellitus (3 Bulan Lalu)'
 }
 
 KELOMPOK_FAKTOR = {
     'Faktor Epidemiologi': ['JML_SPS', 'JML_SPG', 'JML_SPM', 'JML_SPL', 'JML_SPP', 'JML_FASKES'],
-    'Faktor Sosiodemografi': ['JML_PENDUDUK', 'JML_SUMK'],
+    'Faktor Sosiodemografi': ['JML_PENDUDUK', 'JML_SUMK', 'PTPT', 'PTSMA', 'PTSMP', 'PTSD', 'PTTK'],
     'Faktor Lingkungan': ['PRS_JAMBAN', 'PRS_LLan', 'PRS_LLis', 'PRS_Ven', 'PRS_AML'],
-    'Faktor Riwayat Kasus (Lag)': ['JML_KSO_lag1', 'JML_KSO_lag2', 'JML_KSO_lag3', 'JML_KRO_lag1', 'JML_TBHIV_lag1', 'JML_TBDM_lag1']
+    'Faktor Riwayat Kasus (Lag)': [
+        'JML_KSO_lag1', 'JML_KSO_lag2', 'JML_KSO_lag3',
+        'JML_KRO_lag1', 'JML_KRO_lag2', 'JML_KRO_lag3',
+        'JML_TBHIV_lag1', 'JML_TBHIV_lag2', 'JML_TBHIV_lag3',
+        'JML_TBDM_lag1', 'JML_TBDM_lag2', 'JML_TBDM_lag3'
+    ]
 }
 
 # ============================================================
@@ -395,15 +452,19 @@ with tab4:
             imp   = importance_all[kab_rek]
             thr   = imp.mean()
             top10 = imp.head(10)
+            
+            # Ubah label sumbu Y menggunakan KAMUS_FITUR agar mudah dibaca stakeholder
+            labels_terjemahan = [KAMUS_FITUR.get(f, f) for f in top10.index[::-1]]
+            
             warna = ['#1D6FA4' if s >= thr else '#A8DADC' for s in top10]
             
-            fig_rf = go.Figure(go.Bar(x=top10.values[::-1], y=top10.index[::-1],
+            fig_rf = go.Figure(go.Bar(x=top10.values[::-1], y=labels_terjemahan,
                 orientation='h', marker_color=warna[::-1],
                 text=[f'{v:.3f}' for v in top10.values[::-1]], textposition='outside'))
             fig_rf.add_vline(x=thr, line_dash='dash', line_color='red',
                 annotation_text=f'Threshold ({thr:.3f})')
             fig_rf.update_layout(height=400, title=f'Top Features — {kab_rek}', showlegend=False,
-                xaxis_title='Importance Score')
+                xaxis_title='Importance Score', yaxis_title='Faktor / Indikator')
             st.plotly_chart(fig_rf, use_container_width=True)
 
             st.markdown("---")
@@ -415,11 +476,12 @@ with tab4:
                 if fitur_cocok:
                     fitur_utama_kat = fitur_cocok[0]
                     saran = REKOMENDASI.get(fitur_utama_kat, REKOMENDASI['DEFAULT'])
+                    nama_fitur_indo = KAMUS_FITUR.get(fitur_utama_kat, fitur_utama_kat)
                     
                     st.markdown(f"""
                     <div class="rec-box">
                         <strong style="color:#1E3A5F;font-size:1.05rem;">{kategori}</strong><br>
-                        <span style="color:#64748B;font-size:0.9rem;">Indikator Paling Kritis: <code>{fitur_utama_kat}</code></span><br><br>
+                        <span style="color:#64748B;font-size:0.9rem;">Indikator Paling Kritis: <code>{nama_fitur_indo}</code></span><br><br>
                         <strong>Saran Intervensi:</strong> {saran}
                     </div>
                     """, unsafe_allow_html=True)
