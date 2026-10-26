@@ -42,11 +42,12 @@ st.markdown("""
 }
 .info-box { background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:1rem; margin:1rem 0; }
 .success-box { background:#F0FDF4; border:1px solid #86EFAC; border-radius:8px; padding:1rem; margin:1rem 0; }
+.rec-box { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:1.2rem; margin:1rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# KONSTANTA
+# KONSTANTA & KAMUS REKOMENDASI LENGKAP
 # ============================================================
 KOLOM_TARGET  = ['JML_KSO', 'JML_KRO', 'JML_TBHIV', 'JML_TBDM']
 TARGET_LABELS = {
@@ -71,10 +72,33 @@ KOORDINAT = {
 }
 
 REKOMENDASI = {
-    'JML_SPS'    : "Tingkatkan kapasitas skrining TB - jumlah suspek tinggi.",
-    'JML_SPL'    : "Perkuat layanan TB di faskes tingkat lanjut.",
-    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk.",
-    'DEFAULT'    : "Lakukan evaluasi menyeluruh program TB di wilayah ini.",
+    'JML_SPS'    : "Pertahankan strategi Pengawas Menelan Obat (PMO) yang terbukti berhasil menyembuhkan pasien di wilayah ini.",
+    'JML_SPG'    : "Lakukan investigasi penyebab kegagalan pengobatan dan tingkatkan pemantauan kepatuhan minum obat secara ketat.",
+    'JML_SPM'    : "Evaluasi efektivitas regimen obat sebelumnya dan perketat pendampingan medis bagi pasien yang mengulang pengobatan.",
+    'JML_SPL'    : "Lanjutkan pendampingan dan pemantauan berkala bagi pasien yang telah menyelesaikan pengobatan.",
+    'JML_SPP'    : "Gencarkan pelacakan pasien mangkir (Loss to Follow-Up) dengan melibatkan kader desa.",
+    'JML_FASKES' : "Optimalkan jejaring layanan TB dan pemerataan Fasilitas Pelayanan Kesehatan di daerah terpencil.",
+    'JML_PENDUDUK': "Fokuskan program TB pada wilayah padat penduduk dengan meningkatkan deteksi aktif (Active Case Finding).",
+    'JML_SUMK'   : "Beri dukungan nutrisi atau perlindungan sosial bagi pasien TB di wilayah rentan secara ekonomi.",
+    'PRS_JAMBAN' : "Tingkatkan kolaborasi dengan program Sanitasi Total Berbasis Masyarakat (STBM).",
+    'PRS_LLan'   : "Advokasi program bedah rumah sehat dengan Dinas Perkim untuk mengurangi kondisi lantai lembap.",
+    'PRS_LLis'   : "Perbaiki infrastruktur dasar wilayah; daerah dengan akses listrik rendah membutuhkan layanan kesehatan keliling.",
+    'PRS_Ven'    : "Gencarkan penyuluhan bedah ventilasi dan pentingnya pencahayaan sinar matahari pagi di dalam rumah.",
+    'PRS_AML'    : "Tingkatkan kolaborasi lintas sektor bersama Dinas PUPR untuk perluasan sarana air bersih.",
+    'JML_KSO_lag1': "Pantau ketat lonjakan kasus TB Sensitif Obat bulan lalu; pastikan ketersediaan OAT lini pertama aman.",
+    'JML_KSO_lag2': "Evaluasi intervensi program 2 bulan terakhir; pola historis menunjukkan perlunya penyesuaian strategi.",
+    'JML_KSO_lag3': "Tinjau program pengendalian TB-SO secara kuartalan sebagai acuan alokasi anggaran berikutnya.",
+    'JML_KRO_lag1': "Waspada tren penyebaran TB Resisten Obat; segera tingkatkan kapasitas ruang isolasi.",
+    'JML_TBHIV_lag1': "Tingkatkan program kolaborasi TB-HIV; pastikan setiap pasien TB baru langsung mendapatkan skrining VCT.",
+    'JML_TBDM_lag1': "Integrasikan layanan Poli DOTS dengan Poli PTM untuk memantau kadar gula darah pasien.",
+    'DEFAULT'    : "Lakukan evaluasi menyeluruh terhadap program pengendalian TB di wilayah ini berdasarkan data epidemiologi terkini."
+}
+
+KELOMPOK_FAKTOR = {
+    'Faktor Epidemiologi': ['JML_SPS', 'JML_SPG', 'JML_SPM', 'JML_SPL', 'JML_SPP', 'JML_FASKES'],
+    'Faktor Sosiodemografi': ['JML_PENDUDUK', 'JML_SUMK'],
+    'Faktor Lingkungan': ['PRS_JAMBAN', 'PRS_LLan', 'PRS_LLis', 'PRS_Ven', 'PRS_AML'],
+    'Faktor Riwayat Kasus (Lag)': ['JML_KSO_lag1', 'JML_KSO_lag2', 'JML_KSO_lag3', 'JML_KRO_lag1', 'JML_TBHIV_lag1', 'JML_TBDM_lag1']
 }
 
 # ============================================================
@@ -360,11 +384,10 @@ with tab3:
                 st.plotly_chart(fig_ap, use_container_width=True)
 
 with tab4:
-    st.markdown('<div class="section-title">Rekomendasi Tindakan Berdasarkan Feature Importance</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Rekomendasi Tindakan Terarah (Per Faktor Pengaruh)</div>', unsafe_allow_html=True)
     if 'fitur_terpilih' in st.session_state:
         fitur_terpilih = st.session_state['fitur_terpilih']
         importance_all = st.session_state['importance_all']
-        df_eval        = st.session_state['df_eval']
         
         kab_rek = st.selectbox("Pilih Kabupaten/Kota", list(fitur_terpilih.keys()), key='kr')
         if kab_rek:
@@ -384,18 +407,21 @@ with tab4:
             st.plotly_chart(fig_rf, use_container_width=True)
 
             st.markdown("---")
-            st.markdown("#### Rekomendasi Tindakan")
-            fitur_list  = fitur_terpilih[kab_rek]
-            fitur_utama = fitur_list[0] if fitur_list else 'DEFAULT'
-            rek         = REKOMENDASI.get(fitur_utama, REKOMENDASI['DEFAULT'])
-            df_kab      = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
-            mae_val     = round(df_kab['MAE'].mean(), 3) if not df_kab.empty else '-'
-
-            c1, c2 = st.columns(2)
-            for col, val, lbl in [(c1, fitur_utama, 'Faktor Dominan'),
-                                   (c2, mae_val, 'Rata-rata MAE')]:
-                col.markdown(f'<div class="metric-card"><div class="metric-value" style="font-size:1rem;">{val}</div><div class="metric-label">{lbl}</div></div>', unsafe_allow_html=True)
-
-            st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list)}</div>', unsafe_allow_html=True)
+            st.markdown("#### Rekomendasi Tindakan Berdasarkan Kategori Faktor")
+            
+            fitur_kab = fitur_terpilih[kab_rek]
+            for kategori, daftar_fitur in KELOMPOK_FAKTOR.items():
+                fitur_cocok = [f for f in daftar_fitur if f in fitur_kab]
+                if fitur_cocok:
+                    fitur_utama_kat = fitur_cocok[0]
+                    saran = REKOMENDASI.get(fitur_utama_kat, REKOMENDASI['DEFAULT'])
+                    
+                    st.markdown(f"""
+                    <div class="rec-box">
+                        <strong style="color:#1E3A5F;font-size:1.05rem;">{kategori}</strong><br>
+                        <span style="color:#64748B;font-size:0.9rem;">Indikator Paling Kritis: <code>{fitur_utama_kat}</code></span><br><br>
+                        <strong>Saran Intervensi:</strong> {saran}
+                    </div>
+                    """, unsafe_allow_html=True)
     else:
         st.warning("Jalankan evaluasi model terlebih dahulu di tab Prediksi & Evaluasi.")
