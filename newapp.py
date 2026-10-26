@@ -327,7 +327,7 @@ with tab3:
             st.markdown("### Evaluasi Per Kabupaten/Kota")
             st.dataframe(df_eval, use_container_width=True, height=380)
 
-            # GRAFIK AKTUAL VS PREDIKSI (Sesuai Gambar 1 yang diminta)
+            # GRAFIK AKTUAL VS PREDIKSI
             st.markdown('<div class="section-title">Grafik Aktual vs Prediksi</div>', unsafe_allow_html=True)
             c1, c2 = st.columns(2)
             with c1:
@@ -342,17 +342,15 @@ with tab3:
                 idx = kt_ap.index(tk_ap)
                 fig_ap = go.Figure()
                 
-                # Data Aktual
                 yt_val = hasil_model[kab_ap]['rf']['y_test'][:, idx]
                 fig_ap.add_trace(go.Scatter(y=yt_val, mode='lines+markers', name='Aktual',
                     line=dict(color='#1E3A5F', width=3), marker=dict(size=6)))
                 
-                # Prediksi Random Forest
                 yp = hasil_model[kab_ap]['rf']['y_pred'][:, idx]
                 r2 = r2_score(yt_val, yp)
                 fig_ap.add_trace(go.Scatter(y=yp, mode='lines+markers',
                     name=f'Random Forest (R²={r2:.3f})',
-                    line=dict(color='#1D6FA4', width=2, dash='dash'), marker=dict(size=5, symbol='square')))
+                    line=dict(color='#1E3A5F', width=2, dash='dash'), marker=dict(size=5, symbol='square')))
                 
                 fig_ap.update_layout(
                     title=f'Aktual vs Prediksi — {kab_ap} — {tgt_ap}',
@@ -362,13 +360,42 @@ with tab3:
                 st.plotly_chart(fig_ap, use_container_width=True)
 
 with tab4:
-    st.markdown('<div class="section-title">Rekomendasi Tindakan</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Rekomendasi Tindakan Berdasarkan Feature Importance</div>', unsafe_allow_html=True)
     if 'fitur_terpilih' in st.session_state:
         fitur_terpilih = st.session_state['fitur_terpilih']
-        kab_rek = st.selectbox("Pilih Kabupaten", list(fitur_terpilih.keys()), key='kab_rek_s')
+        importance_all = st.session_state['importance_all']
+        df_eval        = st.session_state['df_eval']
+        
+        kab_rek = st.selectbox("Pilih Kabupaten/Kota", list(fitur_terpilih.keys()), key='kr')
         if kab_rek:
-            fitur_utama = fitur_terpilih[kab_rek][0]
-            st.markdown(f"**Faktor Dominan di {kab_rek}:** `{fitur_utama}`")
-            st.info(REKOMENDASI.get(fitur_utama, REKOMENDASI['DEFAULT']))
+            st.markdown("#### Feature Importance — Random Forest")
+            imp   = importance_all[kab_rek]
+            thr   = imp.mean()
+            top10 = imp.head(10)
+            warna = ['#1D6FA4' if s >= thr else '#A8DADC' for s in top10]
+            
+            fig_rf = go.Figure(go.Bar(x=top10.values[::-1], y=top10.index[::-1],
+                orientation='h', marker_color=warna[::-1],
+                text=[f'{v:.3f}' for v in top10.values[::-1]], textposition='outside'))
+            fig_rf.add_vline(x=thr, line_dash='dash', line_color='red',
+                annotation_text=f'Threshold ({thr:.3f})')
+            fig_rf.update_layout(height=400, title=f'Top Features — {kab_rek}', showlegend=False,
+                xaxis_title='Importance Score')
+            st.plotly_chart(fig_rf, use_container_width=True)
+
+            st.markdown("---")
+            st.markdown("#### Rekomendasi Tindakan")
+            fitur_list  = fitur_terpilih[kab_rek]
+            fitur_utama = fitur_list[0] if fitur_list else 'DEFAULT'
+            rek         = REKOMENDASI.get(fitur_utama, REKOMENDASI['DEFAULT'])
+            df_kab      = df_eval[df_eval['Kabupaten/Kota'] == kab_rek]
+            mae_val     = round(df_kab['MAE'].mean(), 3) if not df_kab.empty else '-'
+
+            c1, c2 = st.columns(2)
+            for col, val, lbl in [(c1, fitur_utama, 'Faktor Dominan'),
+                                   (c2, mae_val, 'Rata-rata MAE')]:
+                col.markdown(f'<div class="metric-card"><div class="metric-value" style="font-size:1rem;">{val}</div><div class="metric-label">{lbl}</div></div>', unsafe_allow_html=True)
+
+            st.markdown(f'<div class="success-box"><strong>Rekomendasi untuk {kab_rek}:</strong><br><br>{rek}<br><br><strong>Fitur prediktor terpilih:</strong> {", ".join(fitur_list)}</div>', unsafe_allow_html=True)
     else:
         st.warning("Jalankan evaluasi model terlebih dahulu di tab Prediksi & Evaluasi.")
